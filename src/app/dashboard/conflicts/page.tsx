@@ -3,7 +3,7 @@
 import DashboardLayout from "@/components/dashboard-layout";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { AlertTriangle, CheckCircle, Trash2 } from "lucide-react";
+import { CheckCircle, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 export default function ConflictsPage() {

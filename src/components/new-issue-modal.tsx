@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAction, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { Send, Loader2, X, Sparkles, Check } from "lucide-react";
+import { Loader2, X, Sparkles, Check } from "lucide-react";
 
 export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [text, setText] = useState("");
@@ -32,7 +32,7 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
 
   const handleCreate = async () => {
     if (!preview || !selectedRepoId) return;
-    const repo = repos?.find(r => r._id === selectedRepoId);
+    const repo = repos?.find(r => (r._id as string) === selectedRepoId);
     if (!repo || !repo.githubInstallId) return;
 
     setIsCreating(true);

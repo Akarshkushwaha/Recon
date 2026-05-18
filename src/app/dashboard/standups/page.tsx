@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import DashboardLayout from "@/components/dashboard-layout";
-import { Calendar, User, CheckCircle2, Circle, AlertCircle, Sparkles, Loader2 } from "lucide-react";
+import { Calendar, CheckCircle2, Circle, AlertCircle, Sparkles, Loader2 } from "lucide-react";
 import { useQuery, useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
@@ -75,7 +75,7 @@ export default function StandupsPage() {
     if (!user?.fullName) return;
     setIsGenerating(true);
     try {
-      await generateStandup({ author: user.fullName });
+      await generateStandup({ author: user.fullName as string });
     } catch (err) {
       console.error(err);
     } finally {
