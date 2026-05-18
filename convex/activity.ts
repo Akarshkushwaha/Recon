@@ -49,7 +49,38 @@ export const detectStaleBranches = mutation({
   args: {},
   handler: async (ctx) => {
     console.log("Checking for stale branches...");
-    // Logic to flag branches older than 7 days
+    // 1. Get settings
+    const settings = await ctx.db.query("settings").first();
+    const staleThresholdMs = (settings?.staleThresholdDays || 7) * 24 * 60 * 60 * 1000;
+    const staleCutoff = Date.now() - staleThresholdMs;
+
+    // 2. Query branches
+    const branches = await ctx.db.query("branchActivity").collect();
+    
+    for (const branch of branches) {
+      if (branch.lastPushTimestamp < staleCutoff) {
+        // Check if alert already exists
+        const existing = await ctx.db
+          .query("staleAlerts")
+          .filter((q) => 
+            q.and(
+              q.eq(q.field("repoId"), branch.repoId),
+              q.eq(q.field("branchName"), branch.branchName)
+            )
+          )
+          .first();
+
+        if (!existing) {
+          await ctx.db.insert("staleAlerts", {
+            repoId: branch.repoId,
+            branchName: branch.branchName,
+            author: branch.authorLogin,
+            lastPushTime: branch.lastPushTimestamp,
+            dismissed: false,
+          });
+        }
+      }
+    }
   },
 });
 
@@ -57,7 +88,24 @@ export const sendReviewReminders = mutation({
   args: {},
   handler: async (ctx) => {
     console.log("Checking for PRs needing review...");
-    // Logic to nudge reviewers
+    const openPRs = await ctx.db
+      .query("pullRequests")
+      .filter((q) => q.eq(q.field("state"), "open"))
+      .collect();
+
+    const now = Date.now();
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+    const fortyEightHours = 48 * 60 * 60 * 1000;
+
+    for (const pr of openPRs) {
+      if (now - pr.openedAt > fortyEightHours && !pr.nudge48hSent) {
+        console.log(`[ALERT] PR #${pr.prNumber} in repo ${pr.repoId} has been open for 48h!`);
+        await ctx.db.patch(pr._id, { nudge48hSent: true });
+      } else if (now - pr.openedAt > twentyFourHours && !pr.nudge24hSent) {
+        console.log(`[ALERT] PR #${pr.prNumber} in repo ${pr.repoId} has been open for 24h!`);
+        await ctx.db.patch(pr._id, { nudge24hSent: true });
+      }
+    }
   },
 });
 

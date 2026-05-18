@@ -47,6 +47,23 @@ export const handlePush = mutation({
       });
     }
 
+    // 3. Feature Ownership Checking
+    const ownershipRules = await ctx.db
+      .query("featureOwnership")
+      .withIndex("by_repo", (q) => q.eq("repoId", repo._id))
+      .collect();
+
+    for (const rule of ownershipRules) {
+      if (rule.ownerUser !== args.authorLogin) {
+        // Simple string matching for now (could use proper glob lib later)
+        const matched = args.filesChanged.some(file => file.includes(rule.pathGlob));
+        if (matched) {
+          console.log(`[ALERT] ${args.authorLogin} touched file matching ${rule.pathGlob} owned by ${rule.ownerUser}!`);
+          // NOTE: Can expand to insert into a 'violations' table later if desired.
+        }
+      }
+    }
+
     return repo._id;
   },
 });

@@ -79,4 +79,24 @@ export default defineSchema({
     date: v.string(),
     createdAt: v.number(),
   }).index("by_user_date", ["author", "date"]),
+
+  settings: defineTable({
+    installationId: v.number(),
+    staleThresholdDays: v.number(),
+    activeWindowHours: v.number(),
+  }).index("by_installation", ["installationId"]),
+
+  featureOwnership: defineTable({
+    repoId: v.id("repos"),
+    pathGlob: v.string(),
+    ownerUser: v.string(),
+  }).index("by_repo", ["repoId"]),
+
+  changelogs: defineTable({
+    title: v.string(),
+    content: v.string(),
+    startDate: v.number(),
+    endDate: v.number(),
+    createdAt: v.number(),
+  }),
 });
