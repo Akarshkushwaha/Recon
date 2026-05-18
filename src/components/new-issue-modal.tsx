@@ -11,12 +11,14 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
   const [preview, setPreview] = useState<any>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [selectedRepoId, setSelectedRepoId] = useState("");
 
   const parseIssue = useAction(api.ai.parseIssue);
-  // const createIssue = useAction(api.github.createGitHubIssue);
+  const createIssue = useAction(api.github.createGitHubIssue);
+  const repos = useQuery(api.activity.getRepos);
 
   const handleParse = async () => {
-    if (!text.trim()) return;
+    if (!text.trim() || !selectedRepoId) return;
     setIsParsing(true);
     try {
       const result = await parseIssue({ text });
@@ -25,6 +27,35 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
       console.error(err);
     } finally {
       setIsParsing(false);
+    }
+  };
+
+  const handleCreate = async () => {
+    if (!preview || !selectedRepoId) return;
+    const repo = repos?.find(r => r._id === selectedRepoId);
+    if (!repo || !repo.githubInstallId) return;
+
+    setIsCreating(true);
+    try {
+      await createIssue({
+        installId: repo.githubInstallId,
+        repoFullName: repo.fullName,
+        title: preview.title,
+        body: preview.body,
+        labels: preview.labels,
+        assignee: preview.assignee,
+      });
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        setPreview(null);
+        setText("");
+        onClose();
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -44,11 +75,30 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
         </div>
 
         <div className="p-6 space-y-6">
-          {!preview ? (
+          {success ? (
+            <div className="py-12 flex flex-col items-center justify-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center">
+                <Check size={32} />
+              </div>
+              <h3 className="text-xl font-bold">Issue Created Successfully!</h3>
+            </div>
+          ) : !preview ? (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Type what you're working on in plain English. AI will do the rest.
+                Select a repository and type what you're working on in plain English.
               </p>
+              
+              <select 
+                value={selectedRepoId}
+                onChange={(e) => setSelectedRepoId(e.target.value)}
+                className="w-full bg-muted/50 border rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:outline-none"
+              >
+                <option value="" disabled>Select a repository...</option>
+                {repos?.map(repo => (
+                  <option key={repo._id} value={repo._id}>{repo.fullName}</option>
+                ))}
+              </select>
+
               <textarea 
                 value={text}
                 onChange={(e) => setText(e.target.value)}
@@ -57,7 +107,7 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
               />
               <button 
                 onClick={handleParse}
-                disabled={isParsing || !text}
+                disabled={isParsing || !text || !selectedRepoId}
                 className="w-full bg-primary text-primary-foreground py-4 rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:scale-[1.01]"
               >
                 {isParsing ? <Loader2 className="animate-spin" /> : <Sparkles size={20} />}
@@ -95,6 +145,7 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
                   Edit Input
                 </button>
                 <button 
+                  onClick={handleCreate}
                   disabled={isCreating}
                   className="flex-1 bg-primary text-primary-foreground py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                 >

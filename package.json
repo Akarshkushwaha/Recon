@@ -9,13 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.3.3",
     "@google/generative-ai": "^0.21.0",
     "@octokit/app": "^16.1.2",
     "@octokit/webhooks": "^14.2.0",
     "@radix-ui/react-slot": "^1.1.0",
+    "@tailwindcss/typography": "^0.5.19",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "@clerk/nextjs": "^6.3.3",
     "convex": "^1.17.3",
     "date-fns": "^4.1.0",
     "groq-sdk": "^0.9.1",
@@ -23,6 +24,7 @@
     "next": "^15.0.3",
     "react": "^19.0.0-rc",
     "react-dom": "^19.0.0-rc",
+    "react-markdown": "^10.1.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7"
   },

@@ -8,8 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 
 export default function ConflictsPage() {
   const conflicts = useQuery(api.activity.getActiveConflicts);
-  // We'll need a dismiss mutation
-  // const dismissConflict = useMutation(api.conflicts.dismissConflict);
+  const dismissConflict = useMutation(api.conflicts.dismissConflict);
 
   return (
     <DashboardLayout>
@@ -59,7 +58,10 @@ export default function ConflictsPage() {
                       </p>
                     </div>
                   </div>
-                  <button className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                  <button 
+                    onClick={() => dismissConflict({ conflictId: conflict._id })}
+                    className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                  >
                     <Trash2 size={20} />
                   </button>
                 </div>
@@ -76,7 +78,10 @@ export default function ConflictsPage() {
                 </div>
 
                 <div className="mt-6 flex gap-3">
-                  <button className="flex-1 bg-destructive text-destructive-foreground py-2 rounded-xl font-bold hover:opacity-90 transition-opacity">
+                  <button 
+                    onClick={() => dismissConflict({ conflictId: conflict._id })}
+                    className="flex-1 bg-destructive text-destructive-foreground py-2 rounded-xl font-bold hover:opacity-90 transition-opacity"
+                  >
                     Dismiss Alert
                   </button>
                   <button className="flex-1 bg-secondary text-secondary-foreground py-2 rounded-xl font-bold hover:bg-muted transition-colors">

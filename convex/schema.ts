@@ -70,4 +70,13 @@ export default defineSchema({
     githubIssueId: v.optional(v.number()),
     createdAt: v.number(),
   }),
+
+  standups: defineTable({
+    author: v.string(),
+    yesterday: v.array(v.string()),
+    today: v.array(v.string()),
+    blockers: v.array(v.string()),
+    date: v.string(),
+    createdAt: v.number(),
+  }).index("by_user_date", ["author", "date"]),
 });

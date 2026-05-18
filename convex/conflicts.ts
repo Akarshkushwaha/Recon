@@ -91,3 +91,13 @@ export const saveConflict = mutation({
     }
   },
 });
+
+export const dismissConflict = mutation({
+  args: { conflictId: v.id("conflicts") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.conflictId, {
+      dismissed: true,
+      resolvedAt: Date.now(),
+    });
+  },
+});
