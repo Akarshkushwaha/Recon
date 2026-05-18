@@ -57,8 +57,8 @@ export const generateStandup = action({
 
     // 2. Format activity into a prompt
     const activityText = userActivity.map((a: any) => 
-      \`Pushed \${a.commitCount} commits to \${a.branchName}. Modified files: \${a.filesChanged.join(', ')}\`
-    ).join("\\n");
+      `Pushed ${a.commitCount} commits to ${a.branchName}. Modified files: ${a.filesChanged.join(', ')}`
+    ).join("\n");
 
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const response = await groq.chat.completions.create({
@@ -66,12 +66,12 @@ export const generateStandup = action({
       messages: [
         {
           role: "system",
-          content: \`You are a technical project manager. Based on the following push activity from a developer, generate a daily standup.
+          content: `You are a technical project manager. Based on the following push activity from a developer, generate a daily standup.
           Return ONLY JSON with the following fields (arrays of strings):
           - yesterday: (what they did, based on the activity)
           - today: (logical next steps based on what they did)
           - blockers: (any potential blockers inferred, or empty array)
-          Keep it concise and professional.\`,
+          Keep it concise and professional.`,
         },
         {
           role: "user",
