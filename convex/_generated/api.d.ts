@@ -10,10 +10,12 @@
 
 import type * as activity from "../activity.js";
 import type * as ai from "../ai.js";
+import type * as changelogs from "../changelogs.js";
 import type * as conflicts from "../conflicts.js";
 import type * as crons from "../crons.js";
 import type * as gemini from "../gemini.js";
 import type * as github from "../github.js";
+import type * as settings from "../settings.js";
 import type * as webhooks from "../webhooks.js";
 
 import type {
@@ -25,10 +27,12 @@ import type {
 declare const fullApi: ApiFromModules<{
   activity: typeof activity;
   ai: typeof ai;
+  changelogs: typeof changelogs;
   conflicts: typeof conflicts;
   crons: typeof crons;
   gemini: typeof gemini;
   github: typeof github;
+  settings: typeof settings;
   webhooks: typeof webhooks;
 }>;
 
