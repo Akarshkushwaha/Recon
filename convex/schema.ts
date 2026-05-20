@@ -104,4 +104,26 @@ export default defineSchema({
     endDate: v.number(),
     createdAt: v.number(),
   }),
+
+  aiReviews: defineTable({
+    repoId: v.id("repos"),
+    branchName: v.string(),
+    feedback: v.string(),
+    status: v.string(), // "clean", "warnings", "critical"
+    reviewedAt: v.number(),
+  }).index("by_repo_and_branch", ["repoId", "branchName"]),
+
+  sprintBriefings: defineTable({
+    title: v.string(),
+    content: v.string(),
+    createdAt: v.number(),
+  }),
+
+  burnoutAlerts: defineTable({
+    developer: v.string(),
+    reason: v.string(),
+    activityCount: v.number(),
+    dismissed: v.boolean(),
+    createdAt: v.number(),
+  }),
 });

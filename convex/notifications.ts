@@ -66,7 +66,7 @@ export const triggerConflictNotification = action({
   handler: async (ctx, args) => {
     // 1. Fetch Repository Information
     const repos = await ctx.runQuery(api.activity.getRepos);
-    const repo = repos.find((r) => r._id === args.repoId);
+    const repo = repos.find((r: any) => r._id === args.repoId);
     if (!repo) return;
 
     // 2. Fetch Settings by githubInstallId
