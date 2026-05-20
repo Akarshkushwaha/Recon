@@ -3,7 +3,7 @@
 import DashboardLayout from "@/components/dashboard-layout";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { AlertTriangle, Clock, GitBranch, Terminal, Layers, FileCode, Plus } from "lucide-react";
+import { AlertTriangle, Clock, GitBranch, Terminal, Layers, FileCode, Plus, Filter } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -23,26 +23,60 @@ export default function DashboardPage() {
   const router = useRouter();
   const activity = useQuery(api.activity.getLatestActivity);
   const conflicts = useQuery(api.activity.getActiveConflicts);
+  const repos = useQuery(api.activity.getRepos);
+  const [selectedRepoId, setSelectedRepoId] = useState<string>("all");
   const [isIssueOpen, setIsIssueOpen] = useState(false);
 
-  const activeCount = activity?.length ?? 0;
-  const conflictCount = conflicts?.length ?? 0;
+  const filteredActivity = selectedRepoId === "all"
+    ? activity
+    : activity?.filter((item) => (item.repoId as string) === selectedRepoId);
+
+  const filteredConflicts = selectedRepoId === "all"
+    ? conflicts
+    : conflicts?.filter((item) => (item.repoId as string) === selectedRepoId);
+
+  const activeCount = filteredActivity?.length ?? 0;
+  const conflictCount = filteredConflicts?.length ?? 0;
 
   return (
     <DashboardLayout>
-      {/* Page header */}
-      <div className="flex items-start justify-between mb-8">
+      {/* Page header and Repo selector */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight mb-1">Activity Feed</h1>
           <p className="text-sm text-muted-foreground">Real-time stream of development activity across your connected repositories.</p>
         </div>
-        <button
-          onClick={() => setIsIssueOpen(true)}
-          className="btn-primary"
-        >
-          <Plus size={15} />
-          New Issue
-        </button>
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          {/* Repository Selector Dropdown */}
+          <div className="relative">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground flex items-center">
+              <Filter size={13} />
+            </span>
+            <select
+              value={selectedRepoId}
+              onChange={(e) => setSelectedRepoId(e.target.value)}
+              className="bg-card hover:bg-muted border border-border rounded-xl pl-9 pr-8 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer appearance-none text-foreground"
+            >
+              <option value="all">All Connected Repositories</option>
+              {repos?.map((repo) => (
+                <option key={repo._id} value={repo._id}>
+                  {repo.fullName}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground text-[10px]">
+              ▼
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsIssueOpen(true)}
+            className="btn-primary py-2.5"
+          >
+            <Plus size={15} />
+            New Issue
+          </button>
+        </div>
       </div>
 
       {/* Stats row */}
@@ -53,16 +87,16 @@ export default function DashboardPage() {
       </div>
 
       {/* Conflict alerts */}
-      {conflicts && conflicts.length > 0 && (
+      {filteredConflicts && filteredConflicts.length > 0 && (
         <div className="mb-6 space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-destructive uppercase tracking-widest flex items-center gap-2">
               <AlertTriangle size={14} />
               Conflict Alerts
             </h2>
-            <span className="status-badge status-danger">{conflicts.length} active</span>
+            <span className="status-badge status-danger">{filteredConflicts.length} active</span>
           </div>
-          {conflicts.map((conflict) => (
+          {filteredConflicts.map((conflict) => (
             <div
               key={conflict._id}
               className="flex items-center justify-between p-4 rounded-xl border border-destructive/25 bg-destructive/5 hover:border-destructive/40 transition-colors"
@@ -105,7 +139,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {!activity ? (
+        {!filteredActivity ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex items-center gap-4 p-5 rounded-2xl border">
@@ -118,17 +152,17 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-        ) : activity.length === 0 ? (
+        ) : filteredActivity.length === 0 ? (
           <div className="py-20 text-center border-2 border-dashed rounded-2xl">
             <Layers className="mx-auto text-muted-foreground/30 mb-4" size={44} />
             <h3 className="text-base font-semibold mb-1.5">No signal detected</h3>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-              Push code to any connected repository to see your team's activity stream here.
+              Push code to the selected repository to see your team's activity stream here.
             </p>
           </div>
         ) : (
           <div className="space-y-3">
-            {activity.map((item, i) => (
+            {filteredActivity.map((item, i) => (
               <div
                 key={item._id}
                 className="bento-card flex items-start gap-5 p-5 group"

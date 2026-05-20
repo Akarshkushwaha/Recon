@@ -143,7 +143,7 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
       }, 2000);
     } catch (err: any) {
       console.error("GitHub issue creation failed:", err);
-      setError(err.message || "Failed to create issue on GitHub. Verify your GitHub App configuration.");
+      setError("Convex Action failed (likely missing GitHub App credentials or private key in the Convex backend). Select 'sandbox-repository (Mock Sandbox)' from the repository dropdown to try the full flow in sandbox simulation mode.");
     } finally {
       setIsCreating(false);
     }
@@ -233,9 +233,7 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
                             {repo.fullName}
                           </option>
                         ))}
-                        {(!repos || repos.length === 0) && (
-                          <option value="mock-sandbox">sandbox-repository (Mock Sandbox)</option>
-                        )}
+                        <option value="mock-sandbox">sandbox-repository (Mock Sandbox)</option>
                       </select>
                       <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     </div>

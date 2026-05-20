@@ -4,7 +4,7 @@ import DashboardLayout from "@/components/dashboard-layout";
 import Link from "next/link";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { CheckCircle, X, AlertTriangle, FileCode } from "lucide-react";
+import { CheckCircle, X, AlertTriangle, FileCode, Sparkles } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 export default function ConflictsPage() {
@@ -32,14 +32,36 @@ export default function ConflictsPage() {
           ))}
         </div>
       ) : conflicts.length === 0 ? (
-        <div className="py-24 text-center border-2 border-dashed rounded-2xl">
-          <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center mx-auto mb-5">
-            <CheckCircle className="text-green-500" size={32} />
+        <div className="space-y-6">
+          <div className="py-20 text-center border-2 border-dashed rounded-2xl bg-white/[0.01]">
+            <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center mx-auto mb-5">
+              <CheckCircle className="text-green-500" size={32} />
+            </div>
+            <h3 className="text-lg font-bold mb-2">All clear!</h3>
+            <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+              No overlapping changes detected. Your team is perfectly in sync.
+            </p>
           </div>
-          <h3 className="text-lg font-bold mb-2">All clear!</h3>
-          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-            No overlapping changes detected. Your team is perfectly in sync.
-          </p>
+
+          {/* Premium Sandbox promo card */}
+          <div className="glass-card rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-card to-card p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-1.5 text-left">
+              <h3 className="text-base font-bold flex items-center gap-2 text-primary">
+                <Sparkles size={16} className="animate-pulse" />
+                Try Conflict Sandbox Playground
+              </h3>
+              <p className="text-xs text-muted-foreground max-w-xl">
+                Experience Recon's conflict resolution first-hand. Launch the sandbox simulator to review side-by-side branch telemetries, run smart AI code synthesis, and resolve overlaps in real time.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/conflicts/playground?conflictId=demo"
+              className="btn-primary shrink-0 flex items-center gap-2 py-2.5 shadow-lg shadow-primary/20"
+            >
+              <Sparkles size={14} />
+              Launch Demo Playground
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
