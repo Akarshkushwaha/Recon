@@ -11,8 +11,8 @@ import {
   ChevronRight,
   GitPullRequest,
   CheckCircle,
-  FileCode,
-  FolderOpen
+  FolderOpen,
+  Filter
 } from "lucide-react";
 import { useState } from "react";
 
@@ -20,10 +20,18 @@ const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
 const HOURS = Array.from({ length: 24 }, (_, i) => `${i}:00`);
 
 export default function AnalyticsPage() {
-  const heatmap = useQuery(api.analytics.getContributorHeatmap);
-  const velocity = useQuery(api.analytics.getReviewVelocity);
-  const leaderboard = useQuery(api.analytics.getLeaderboard);
-  const ownership = useQuery(api.analytics.getCodeOwnershipMap);
+  // Fetch available repositories
+  const repos = useQuery(api.activity.getRepos);
+  const [selectedRepoId, setSelectedRepoId] = useState<string>("all");
+
+  // Format repo parameter for Convex
+  const repoParam = selectedRepoId === "all" ? undefined : (selectedRepoId as any);
+
+  // Queries with optional repository filter
+  const heatmap = useQuery(api.analytics.getContributorHeatmap, { repoId: repoParam });
+  const velocity = useQuery(api.analytics.getReviewVelocity, { repoId: repoParam });
+  const leaderboard = useQuery(api.analytics.getLeaderboard, { repoId: repoParam });
+  const ownership = useQuery(api.analytics.getCodeOwnershipMap, { repoId: repoParam });
 
   const [activeTab, setActiveTab] = useState<"heatmap" | "leaderboard" | "velocity" | "ownership">("heatmap");
   const [hoveredCell, setHoveredCell] = useState<{ day: number; hour: number; val: number } | null>(null);
@@ -39,28 +47,54 @@ export default function AnalyticsPage() {
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6">
-        {/* Page header */}
-        <div className="flex items-start justify-between">
+        
+        {/* Page header and Repo selector */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight mb-1">Engineering Analytics</h1>
             <p className="text-sm text-muted-foreground">Deep behavioral and velocity insights aggregated from commit streams and pull requests.</p>
           </div>
-          {/* Navigation tab bar */}
-          <div className="flex bg-muted/60 p-1 rounded-xl border">
-            {(["heatmap", "leaderboard", "velocity", "ownership"] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 text-xs font-semibold rounded-lg capitalize transition-all ${
-                  activeTab === tab
-                    ? "bg-background shadow-md text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+          
+          {/* Repository Selector Dropdown */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground flex items-center">
+                <Filter size={13} />
+              </span>
+              <select
+                value={selectedRepoId}
+                onChange={(e) => setSelectedRepoId(e.target.value)}
+                className="bg-card hover:bg-muted border border-border rounded-xl pl-9 pr-8 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer appearance-none"
               >
-                {tab}
-              </button>
-            ))}
+                <option value="all">All Connected Repositories</option>
+                {repos?.map((repo) => (
+                  <option key={repo._id} value={repo._id}>
+                    {repo.name}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground text-[10px]">
+                ▼
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Tab Selector */}
+        <div className="flex bg-muted/65 p-1 rounded-xl border w-fit">
+          {(["heatmap", "leaderboard", "velocity", "ownership"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 text-xs font-semibold rounded-lg capitalize transition-all ${
+                activeTab === tab
+                  ? "bg-background shadow-md text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
 
         {/* Dynamic content area */}
@@ -68,7 +102,7 @@ export default function AnalyticsPage() {
           
           {/* 1. CONTRIBUTOR HEATMAP */}
           {activeTab === "heatmap" && (
-            <div className="bento-card">
+            <div className="bento-card animate-fade-in">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-bold flex items-center gap-2">
@@ -139,7 +173,7 @@ export default function AnalyticsPage() {
 
           {/* 2. WEEKLY COMMIT LEADERBOARD */}
           {activeTab === "leaderboard" && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
               {/* Leaderboard panel */}
               <div className="bento-card md:col-span-2">
                 <div className="flex items-center justify-between mb-6">
@@ -161,7 +195,7 @@ export default function AnalyticsPage() {
                   </div>
                 ) : leaderboard.weekly.length === 0 ? (
                   <div className="py-12 text-center text-muted-foreground text-sm">
-                    No commit pushes registered in the last 7 days.
+                    No commit pushes registered for this repository filter in the last 7 days.
                   </div>
                 ) : (
                   <div className="space-y-2.5">
@@ -221,7 +255,7 @@ export default function AnalyticsPage() {
 
           {/* 3. PR REVIEW VELOCITY */}
           {activeTab === "velocity" && (
-            <div className="bento-card">
+            <div className="bento-card animate-fade-in">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-bold flex items-center gap-2">
@@ -230,7 +264,7 @@ export default function AnalyticsPage() {
                   </h2>
                   <p className="text-xs text-muted-foreground">Average turnaround time from pull request opening to final review and code merge.</p>
                 </div>
-                {velocity && (
+                {velocity && velocity.mergedCount > 0 && (
                   <div className="text-right">
                     <span className="text-2xl font-black text-primary">{velocity.avgMergeHours}h</span>
                     <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Avg Cycle Time</p>
@@ -268,7 +302,7 @@ export default function AnalyticsPage() {
                   <div className="md:col-span-2 space-y-4">
                     <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Merge Velocity by Developer</h3>
                     {Object.keys(velocity.authorVelocity).length === 0 ? (
-                      <div className="text-sm text-muted-foreground">No pull requests have been merged recently.</div>
+                      <div className="text-sm text-muted-foreground py-6">No pull requests have been merged for this selection.</div>
                     ) : (
                       <div className="space-y-3">
                         {Object.entries(velocity.authorVelocity).map(([author, stats]) => (
@@ -295,7 +329,7 @@ export default function AnalyticsPage() {
 
           {/* 4. CODE OWNERSHIP TREE */}
           {activeTab === "ownership" && (
-            <div className="bento-card">
+            <div className="bento-card animate-fade-in">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-bold flex items-center gap-2">
@@ -310,7 +344,7 @@ export default function AnalyticsPage() {
                 <div className="h-48 skeleton rounded-xl" />
               ) : ownership.ownership.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground text-sm">
-                  No directory path mappings recorded yet. Push some commits to connect paths!
+                  No directory path mappings recorded yet for this project filter. Push some commits to connect paths!
                 </div>
               ) : (
                 <div className="space-y-3">

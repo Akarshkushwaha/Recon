@@ -1,25 +1,41 @@
 import { query } from "./_generated/server";
+import { v } from "convex/values";
 
 // ────────────────────────────────────────────────────
 // 1. Contributor Heatmap
-//    Groups pushes by author × dayOfWeek × hour
+//    Groups pushes by author × dayOfWeek × hour (filtered by repoId optionally)
 // ────────────────────────────────────────────────────
 export const getContributorHeatmap = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    repoId: v.optional(v.id("repos")),
+  },
+  handler: async (ctx, args) => {
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    let activity;
 
-    const activity = await ctx.db
-      .query("branchActivity")
-      .filter((q) => q.gt(q.field("lastPushTimestamp"), thirtyDaysAgo))
-      .collect();
+    if (args.repoId) {
+      activity = await ctx.db
+        .query("branchActivity")
+        .filter((q) =>
+          q.and(
+            q.gt(q.field("lastPushTimestamp"), thirtyDaysAgo),
+            q.eq(q.field("repoId"), args.repoId!)
+          )
+        )
+        .collect();
+    } else {
+      activity = await ctx.db
+        .query("branchActivity")
+        .filter((q) => q.gt(q.field("lastPushTimestamp"), thirtyDaysAgo))
+        .collect();
+    }
 
     // Build a 7×24 grid: cells[day][hour] = count
     const grid: number[][] = Array.from({ length: 7 }, () =>
       Array(24).fill(0)
     );
 
-    // Also track per-author contributions
+    // Track per-author contributions
     const authorMap: Record<string, number> = {};
 
     for (const item of activity) {
@@ -37,17 +53,28 @@ export const getContributorHeatmap = query({
 
 // ────────────────────────────────────────────────────
 // 2. PR Review Velocity
-//    Avg time from open → merge for closed PRs
+//    Avg time from open → merge for closed PRs (filtered by repoId optionally)
 // ────────────────────────────────────────────────────
 export const getReviewVelocity = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    repoId: v.optional(v.id("repos")),
+  },
+  handler: async (ctx, args) => {
     const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
+    let prs;
 
-    const prs = await ctx.db
-      .query("pullRequests")
-      .filter((q) => q.gt(q.field("openedAt"), ninetyDaysAgo))
-      .collect();
+    if (args.repoId) {
+      prs = await ctx.db
+        .query("pullRequests")
+        .withIndex("by_repo_and_pr", (q) => q.eq("repoId", args.repoId!))
+        .filter((q) => q.gt(q.field("openedAt"), ninetyDaysAgo))
+        .collect();
+    } else {
+      prs = await ctx.db
+        .query("pullRequests")
+        .filter((q) => q.gt(q.field("openedAt"), ninetyDaysAgo))
+        .collect();
+    }
 
     const merged = prs.filter((pr) => pr.state === "merged" && pr.closedAt);
     const open = prs.filter((pr) => pr.state === "open");
@@ -96,23 +123,49 @@ export const getReviewVelocity = query({
 
 // ────────────────────────────────────────────────────
 // 3. Weekly Leaderboard
-//    Rank contributors by commits, files, branches
+//    Rank contributors (filtered by repoId optionally)
 // ────────────────────────────────────────────────────
 export const getLeaderboard = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    repoId: v.optional(v.id("repos")),
+  },
+  handler: async (ctx, args) => {
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    let weeklyActivity;
+    let monthlyActivity;
 
-    const weeklyActivity = await ctx.db
-      .query("branchActivity")
-      .filter((q) => q.gt(q.field("lastPushTimestamp"), sevenDaysAgo))
-      .collect();
+    if (args.repoId) {
+      weeklyActivity = await ctx.db
+        .query("branchActivity")
+        .filter((q) =>
+          q.and(
+            q.gt(q.field("lastPushTimestamp"), sevenDaysAgo),
+            q.eq(q.field("repoId"), args.repoId!)
+          )
+        )
+        .collect();
 
-    const monthlyActivity = await ctx.db
-      .query("branchActivity")
-      .filter((q) => q.gt(q.field("lastPushTimestamp"), thirtyDaysAgo))
-      .collect();
+      monthlyActivity = await ctx.db
+        .query("branchActivity")
+        .filter((q) =>
+          q.and(
+            q.gt(q.field("lastPushTimestamp"), thirtyDaysAgo),
+            q.eq(q.field("repoId"), args.repoId!)
+          )
+        )
+        .collect();
+    } else {
+      weeklyActivity = await ctx.db
+        .query("branchActivity")
+        .filter((q) => q.gt(q.field("lastPushTimestamp"), sevenDaysAgo))
+        .collect();
+
+      monthlyActivity = await ctx.db
+        .query("branchActivity")
+        .filter((q) => q.gt(q.field("lastPushTimestamp"), thirtyDaysAgo))
+        .collect();
+    }
 
     // Build weekly stats per author
     const weeklyMap: Record<
@@ -172,26 +225,34 @@ export const getLeaderboard = query({
 
 // ────────────────────────────────────────────────────
 // 4. Code Ownership Map
-//    File tree with ownership based on push history
+//    File tree path ownership (filtered by repoId optionally)
 // ────────────────────────────────────────────────────
 export const getCodeOwnershipMap = query({
-  args: {},
-  handler: async (ctx) => {
-    // Get all branch activity
-    const activity = await ctx.db.query("branchActivity").collect();
+  args: {
+    repoId: v.optional(v.id("repos")),
+  },
+  handler: async (ctx, args) => {
+    let activity;
 
-    // Build ownership by most-frequent author per top-level path
+    if (args.repoId) {
+      activity = await ctx.db
+        .query("branchActivity")
+        .filter((q) => q.eq(q.field("repoId"), args.repoId!))
+        .collect();
+    } else {
+      activity = await ctx.db.query("branchActivity").collect();
+    }
+
+    // Build ownership by most-frequent author per path
     const pathAuthorMap: Record<string, Record<string, number>> = {};
 
     for (const item of activity) {
       for (const file of item.filesChanged) {
-        // Get the top-level folder (e.g., "src", "convex", "public")
         const parts = file.split("/");
         const topLevel = parts.length > 1 ? parts[0] : "(root)";
         const secondLevel =
           parts.length > 2 ? `${parts[0]}/${parts[1]}` : topLevel;
 
-        // Track at second level for more granularity
         if (!pathAuthorMap[secondLevel]) {
           pathAuthorMap[secondLevel] = {};
         }
@@ -224,8 +285,16 @@ export const getCodeOwnershipMap = query({
       }
     );
 
-    // Also fetch defined ownership rules
-    const rules = await ctx.db.query("featureOwnership").collect();
+    // Fetch defined ownership rules
+    let rules;
+    if (args.repoId) {
+      rules = await ctx.db
+        .query("featureOwnership")
+        .withIndex("by_repo", (q) => q.eq("repoId", args.repoId!))
+        .collect();
+    } else {
+      rules = await ctx.db.query("featureOwnership").collect();
+    }
 
     return { ownership, rules };
   },
