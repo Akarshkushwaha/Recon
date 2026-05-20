@@ -92,7 +92,12 @@ export default function SettingsPage() {
                 GitHub App is connected and active.
                 {isSaving && <Loader2 size={14} className="animate-spin text-primary" />}
               </span>
-              <button className="text-primary text-sm font-bold hover:underline">Reinstall</button>
+              <button 
+                onClick={() => window.open("https://github.com/apps/recon1912/installations/new", "_blank")}
+                className="text-primary text-sm font-bold hover:underline"
+              >
+                Reinstall
+              </button>
             </div>
           </div>
         </SettingsSection>
