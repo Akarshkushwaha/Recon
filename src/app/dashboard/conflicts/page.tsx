@@ -3,7 +3,7 @@
 import DashboardLayout from "@/components/dashboard-layout";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { CheckCircle, Trash2 } from "lucide-react";
+import { CheckCircle, X, AlertTriangle, FileCode } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 export default function ConflictsPage() {
@@ -12,87 +12,107 @@ export default function ConflictsPage() {
 
   return (
     <DashboardLayout>
-      <div className="grid gap-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Conflicts</h1>
-            <p className="text-muted-foreground">Active overlaps detected between branches.</p>
-          </div>
-          <span className="bg-destructive/10 text-destructive px-4 py-1 rounded-full text-sm font-bold border border-destructive/20">
-            {conflicts?.length || 0} Active
-          </span>
+      {/* Header */}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight mb-1">Merge Conflicts</h1>
+          <p className="text-sm text-muted-foreground">Active file overlaps detected between branches in your repositories.</p>
         </div>
+        <span className={`status-badge ${(conflicts?.length ?? 0) > 0 ? "status-danger" : "status-live"}`}>
+          {conflicts?.length ?? 0} {(conflicts?.length ?? 0) === 1 ? "conflict" : "conflicts"}
+        </span>
+      </div>
 
-        <div className="grid gap-4">
-          {!conflicts ? (
-            <div className="flex flex-col gap-4 animate-pulse">
-              {[1, 2].map((i) => (
-                <div key={i} className="h-40 bg-muted rounded-xl" />
-              ))}
-            </div>
-          ) : conflicts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-20 border border-dashed rounded-2xl bg-card/50">
-              <CheckCircle className="text-primary mb-4" size={48} />
-              <h3 className="text-xl font-bold">No Conflicts Found</h3>
-              <p className="text-muted-foreground">Your team is perfectly in sync.</p>
-            </div>
-          ) : (
-            conflicts.map((conflict) => (
-              <div key={conflict._id} className="p-6 rounded-2xl border border-destructive/30 bg-card hover:border-destructive/50 transition-all group">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex -space-x-3">
-                      <div className="w-12 h-12 rounded-full bg-primary border-4 border-card flex items-center justify-center font-bold">
-                        {conflict.author1[0]}
-                      </div>
-                      <div className="w-12 h-12 rounded-full bg-secondary border-4 border-card flex items-center justify-center font-bold">
-                        {conflict.author2[0]}
-                      </div>
+      {/* Content */}
+      {!conflicts ? (
+        <div className="space-y-4">
+          {[1, 2].map(i => (
+            <div key={i} className="h-44 skeleton rounded-2xl" />
+          ))}
+        </div>
+      ) : conflicts.length === 0 ? (
+        <div className="py-24 text-center border-2 border-dashed rounded-2xl">
+          <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center mx-auto mb-5">
+            <CheckCircle className="text-green-500" size={32} />
+          </div>
+          <h3 className="text-lg font-bold mb-2">All clear!</h3>
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+            No overlapping changes detected. Your team is perfectly in sync.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {conflicts.map((conflict) => (
+            <div
+              key={conflict._id}
+              className="rounded-2xl border border-destructive/20 bg-card overflow-hidden"
+            >
+              {/* Header bar */}
+              <div className="flex items-center justify-between px-6 py-4 bg-destructive/5 border-b border-destructive/10">
+                <div className="flex items-center gap-4">
+                  {/* Stacked avatars */}
+                  <div className="flex -space-x-2">
+                    <div className="w-9 h-9 rounded-full bg-primary border-2 border-card flex items-center justify-center text-primary-foreground text-sm font-bold">
+                      {conflict.author1?.[0]?.toUpperCase()}
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold">
-                        {conflict.branch1} <span className="text-muted-foreground mx-2">vs</span> {conflict.branch2}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Detected {formatDistanceToNow(conflict.detectedAt, { addSuffix: true })}
-                      </p>
+                    <div className="w-9 h-9 rounded-full bg-muted border-2 border-card flex items-center justify-center text-foreground text-sm font-bold">
+                      {conflict.author2?.[0]?.toUpperCase()}
                     </div>
                   </div>
-                  <button 
-                    onClick={() => dismissConflict({ conflictId: conflict._id })}
-                    className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    <Trash2 size={20} />
-                  </button>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-foreground">Conflicting Files:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {conflict.conflictingFiles.map((file, idx) => (
-                      <code key={idx} className="bg-destructive/10 text-destructive px-3 py-1 rounded-md text-xs border border-destructive/20">
-                        {file}
-                      </code>
-                    ))}
+                  <div>
+                    <div className="flex items-center gap-2 text-sm font-bold">
+                      <span className="font-mono text-primary">{conflict.branch1}</span>
+                      <AlertTriangle size={13} className="text-destructive" />
+                      <span className="font-mono text-primary">{conflict.branch2}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Detected {formatDistanceToNow(conflict.detectedAt, { addSuffix: true })}
+                    </p>
                   </div>
                 </div>
+                <button
+                  onClick={() => dismissConflict({ conflictId: conflict._id })}
+                  className="btn-ghost p-2 rounded-lg text-muted-foreground hover:text-foreground"
+                  title="Dismiss conflict"
+                >
+                  <X size={16} />
+                </button>
+              </div>
 
-                <div className="mt-6 flex gap-3">
-                  <button 
+              {/* Files */}
+              <div className="px-6 py-4">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">
+                  Conflicting Files ({conflict.conflictingFiles.length})
+                </p>
+                <div className="flex flex-wrap gap-2 mb-5">
+                  {conflict.conflictingFiles.map((file, idx) => (
+                    <span
+                      key={idx}
+                      className="code-tag text-destructive border-destructive/25 bg-destructive/5 flex items-center gap-1.5"
+                    >
+                      <FileCode size={10} />
+                      {file}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2.5">
+                  <button
                     onClick={() => dismissConflict({ conflictId: conflict._id })}
-                    className="flex-1 bg-destructive text-destructive-foreground py-2 rounded-xl font-bold hover:opacity-90 transition-opacity"
+                    className="btn-danger"
                   >
                     Dismiss Alert
                   </button>
-                  <button className="flex-1 bg-secondary text-secondary-foreground py-2 rounded-xl font-bold hover:bg-muted transition-colors">
+                  <button className="btn-secondary">
                     View Diff
                   </button>
                 </div>
               </div>
-            ))
-          )}
+            </div>
+          ))}
         </div>
-      </div>
+      )}
     </DashboardLayout>
   );
 }

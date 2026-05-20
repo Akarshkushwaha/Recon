@@ -9,6 +9,12 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+      fontFamily: {
+        sans: ["var(--font-inter)", "Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+      },
+      letterSpacing: {
+        tightest: "-0.04em",
+      },
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
