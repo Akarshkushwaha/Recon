@@ -105,13 +105,28 @@ export default function SettingsPage() {
                   GitHub App connected and active
                 </span>
               </div>
-              <button
-                onClick={() => window.open("https://github.com/apps/recon1912/installations/new", "_blank")}
-                className="btn-ghost text-xs flex items-center gap-1.5"
-              >
-                Reinstall
-                <ExternalLink size={11} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const installId = settings?.installationId;
+                    const url = installId 
+                      ? `https://github.com/settings/installations/${installId}`
+                      : "https://github.com/apps/recon1912";
+                    window.open(url, "_blank");
+                  }}
+                  className="btn-ghost text-xs flex items-center gap-1.5"
+                >
+                  Manage Repos
+                  <ExternalLink size={11} />
+                </button>
+                <button
+                  onClick={() => window.open("https://github.com/apps/recon1912", "_blank")}
+                  className="btn-ghost text-xs flex items-center gap-1.5"
+                >
+                  Reinstall
+                  <ExternalLink size={11} />
+                </button>
+              </div>
             </div>
           </div>
         </Section>
