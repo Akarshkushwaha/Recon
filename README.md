@@ -1,4 +1,4 @@
-# 📡 RECON
+# 📡 RECON - testing recon
 
 **The real-time pulse of your development team.** Recon helps engineering teams maintain absolute awareness of code changes across all branches, detecting conflicts *before* they hit the PR phase and automating the repetitive tasks of daily standups and PR documentation.
 
