@@ -504,3 +504,53 @@ export const getAllBranches = query({
     return branchesWithRepo;
   },
 });
+
+export const resolveConflictAI = action({
+  args: {
+    branch1: v.string(),
+    branch2: v.string(),
+    author1: v.string(),
+    author2: v.string(),
+    filePath: v.string(),
+    branch1Code: v.string(),
+    branch2Code: v.string(),
+  },
+  handler: async (ctx, args): Promise<{ resolvedCode: string; explanation: string }> => {
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const response = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        {
+          role: "system",
+          content: `You are an elite principal engineer specializing in git merge conflict resolution.
+          You will receive the filepath, the two conflicting branches, the two authors, and the file contents from both branches.
+          Your task is to merge the two versions into a single, flawless, compile-ready version.
+          Retain important functionality from both branches where possible. If there's a conflict in design tokens or themes, synthesize a highly elegant combination.
+          
+          You MUST respond in JSON format with exactly two fields:
+          1. "resolvedCode": (the complete resolved file content as a string)
+          2. "explanation": (a short markdown explanation of how you resolved the conflict, highlighting what you kept from each author)
+          
+          Do NOT wrap the code in markdown code fences within the JSON. Return raw valid JSON.`,
+        },
+        {
+          role: "user",
+          content: JSON.stringify({
+            filePath: args.filePath,
+            branch1: args.branch1,
+            branch2: args.branch2,
+            author1: args.author1,
+            author2: args.author2,
+            branch1Code: args.branch1Code,
+            branch2Code: args.branch2Code,
+          }),
+        },
+      ],
+      response_format: { type: "json_object" },
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || "{}");
+    return result as { resolvedCode: string; explanation: string };
+  },
+});
+

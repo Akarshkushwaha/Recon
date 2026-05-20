@@ -84,6 +84,13 @@ export async function POST(req: Request) {
           prNumber: event.pull_request.number,
         });
       }
+
+      // 3. Trigger PR Auto-Labeler
+      await convex.action(api.github.autoLabelPR, {
+        installId: event.installation.id,
+        repoFullName: event.repository.full_name,
+        prNumber: event.pull_request.number,
+      });
     }
   }
 

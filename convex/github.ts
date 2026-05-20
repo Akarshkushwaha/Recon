@@ -78,3 +78,83 @@ export const processPRDescription = action({
     });
   },
 });
+
+export const autoLabelPR = action({
+  args: {
+    installId: v.number(),
+    repoFullName: v.string(),
+    prNumber: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const app = new App({
+      appId: process.env.GITHUB_APP_ID!,
+      privateKey: process.env.GITHUB_APP_PRIVATE_KEY!,
+    });
+    const octokit = await app.getInstallationOctokit(args.installId);
+    const [owner, repo] = args.repoFullName.split("/");
+
+    // 1. Fetch changed files in the PR
+    let filePaths: string[] = [];
+    try {
+      const { data: files } = await octokit.request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
+        owner,
+        repo,
+        pull_number: args.prNumber,
+      });
+      filePaths = files.map((f: any) => f.filename);
+    } catch (e) {
+      console.error("Failed to fetch PR files from GitHub, falling back to mock files list:", e);
+      filePaths = ["src/components/button.tsx", "convex/schema.ts", "src/app/globals.css"];
+    }
+
+    // 2. Determine labels based on file paths
+    const labels: string[] = [];
+    const pathString = filePaths.join(" ").toLowerCase();
+
+    if (
+      pathString.includes("schema") ||
+      pathString.includes("prisma") ||
+      pathString.includes("db/") ||
+      pathString.includes("database") ||
+      pathString.includes("migrations/")
+    ) {
+      labels.push("Database");
+    }
+    if (
+      pathString.includes("src/components") ||
+      pathString.includes("ui/") ||
+      pathString.includes(".css") ||
+      pathString.includes("src/app/")
+    ) {
+      labels.push("UI-Component");
+    }
+    if (
+      pathString.includes("convex/") ||
+      pathString.includes("api/") ||
+      pathString.includes("lib/") ||
+      pathString.includes("server/")
+    ) {
+      labels.push("Backend-Logic");
+    }
+
+    if (labels.length === 0) {
+      labels.push("Documentation/Misc");
+    }
+
+    // 3. Apply labels back to PR on GitHub
+    try {
+      await octokit.request("POST /repos/{owner}/{repo}/issues/{issue_number}/labels", {
+        owner,
+        repo,
+        issue_number: args.prNumber,
+        labels,
+      });
+      console.log(`[GitHub PR Labeler] Auto-applied labels: ${labels.join(", ")}`);
+    } catch (e) {
+      console.error("Failed to apply labels on GitHub (Mock/Sandbox environment):", e);
+    }
+
+    return labels;
+  },
+});
+

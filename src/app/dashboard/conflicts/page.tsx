@@ -1,6 +1,7 @@
 "use client";
 
 import DashboardLayout from "@/components/dashboard-layout";
+import Link from "next/link";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { CheckCircle, X, AlertTriangle, FileCode } from "lucide-react";
@@ -104,9 +105,12 @@ export default function ConflictsPage() {
                   >
                     Dismiss Alert
                   </button>
-                  <button className="btn-secondary">
+                  <Link
+                    href={`/dashboard/conflicts/playground?conflictId=${conflict._id}`}
+                    className="btn-secondary flex items-center justify-center"
+                  >
                     View Diff
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
