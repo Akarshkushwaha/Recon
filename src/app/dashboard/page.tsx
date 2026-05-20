@@ -6,6 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import { AlertTriangle, Clock, GitBranch, Terminal, Layers, FileCode, Plus } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import NewIssueModal from "@/components/new-issue-modal";
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
@@ -19,6 +20,7 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const activity = useQuery(api.activity.getLatestActivity);
   const conflicts = useQuery(api.activity.getActiveConflicts);
   const [isIssueOpen, setIsIssueOpen] = useState(false);
@@ -80,7 +82,10 @@ export default function DashboardPage() {
                   </p>
                 </div>
               </div>
-              <button className="btn-danger text-xs px-3 py-1.5">
+              <button
+                onClick={() => router.push(`/dashboard/conflicts/playground?conflictId=${conflict._id}`)}
+                className="btn-danger text-xs px-3 py-1.5"
+              >
                 Resolve
               </button>
             </div>

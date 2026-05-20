@@ -60,6 +60,17 @@ export async function POST(req: Request) {
     }
   }
 
+  if (eventName === "installation_repositories" && event.action === "added") {
+    for (const repo of event.repositories_added) {
+      await convex.mutation(api.webhooks.handleRepoAdded, {
+        installId: event.installation.id,
+        repoId: repo.id,
+        name: repo.name,
+        fullName: repo.full_name,
+      });
+    }
+  }
+
   if (eventName === "pull_request" && event.action === "opened") {
     const repo = await convex.query(api.activity.getRepoByGithubId, {
       githubRepoId: event.repository.id,
