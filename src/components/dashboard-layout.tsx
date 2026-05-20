@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   Activity, GitBranch, AlertTriangle, Settings, Calendar,
-  LayoutDashboard, FileText, Bell, ChevronRight
+  LayoutDashboard, FileText, Bell, ChevronRight, BarChart2
 } from "lucide-react";
 import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
@@ -15,6 +15,7 @@ const NAV = [
   { href: "/dashboard/conflicts", icon: AlertTriangle, label: "Merge Conflicts" },
   { href: "/dashboard/standups", icon: Calendar, label: "Team Standups" },
   { href: "/dashboard/changelogs", icon: FileText, label: "Changelogs" },
+  { href: "/dashboard/analytics", icon: BarChart2, label: "Analytics" },
 ];
 
 function NavItem({ href, icon: Icon, label }: { href: string; icon: any; label: string }) {

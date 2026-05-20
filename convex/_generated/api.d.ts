@@ -10,6 +10,7 @@
 
 import type * as activity from "../activity.js";
 import type * as ai from "../ai.js";
+import type * as analytics from "../analytics.js";
 import type * as changelogs from "../changelogs.js";
 import type * as conflicts from "../conflicts.js";
 import type * as crons from "../crons.js";
@@ -27,6 +28,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   activity: typeof activity;
   ai: typeof ai;
+  analytics: typeof analytics;
   changelogs: typeof changelogs;
   conflicts: typeof conflicts;
   crons: typeof crons;
