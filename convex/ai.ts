@@ -91,6 +91,18 @@ export const generateStandup = action({
       blockers: parsed.blockers || [],
       date: new Date().toISOString().split("T")[0],
     });
+
+    // 4. Trigger Slack Daily Notification Update
+    try {
+      await ctx.runAction(api.notifications.triggerDailyStandupNotification, {
+        author: args.author,
+        yesterday: parsed.yesterday || [],
+        today: parsed.today || [],
+        blockers: parsed.blockers || [],
+      });
+    } catch (e) {
+      console.error("Failed to post daily standup notification:", e);
+    }
   },
 });
 

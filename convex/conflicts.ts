@@ -38,6 +38,16 @@ export const detectConflicts = action({
           author2: other.authorLogin,
           conflictingFiles: commonFiles,
         });
+
+        // Trigger Slack & Discord Webhooks
+        await ctx.runAction(api.notifications.triggerConflictNotification, {
+          repoId: args.repoId,
+          branch1: currentBranch.branchName,
+          branch2: other.branchName,
+          author1: currentBranch.authorLogin,
+          author2: other.authorLogin,
+          conflictingFiles: commonFiles,
+        });
       }
     }
   },

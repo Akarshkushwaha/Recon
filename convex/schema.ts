@@ -84,6 +84,11 @@ export default defineSchema({
     installationId: v.number(),
     staleThresholdDays: v.number(),
     activeWindowHours: v.number(),
+    slackWebhookUrl: v.optional(v.string()),
+    discordWebhookUrl: v.optional(v.string()),
+    notifyOnConflicts: v.optional(v.boolean()),
+    notifyDailyStandup: v.optional(v.boolean()),
+    notifyStaleBranches: v.optional(v.boolean()),
   }).index("by_installation", ["installationId"]),
 
   featureOwnership: defineTable({

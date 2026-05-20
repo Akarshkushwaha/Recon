@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard-layout";
-import { Settings, Github, Zap, Shield, Loader2, Check, ExternalLink } from "lucide-react";
+import { Settings, Github, Zap, Shield, Loader2, Check, ExternalLink, MessageSquare } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 
@@ -31,10 +31,25 @@ export default function SettingsPage() {
   const [activeWindow, setActiveWindow] = useState<number | null>(null);
   const [savedKey, setSavedKey] = useState<string | null>(null);
 
+  // Webhooks & notification toggles
+  const [slackUrl, setSlackUrl] = useState<string>("");
+  const [discordUrl, setDiscordUrl] = useState<string>("");
+  const [notifyOnConflicts, setNotifyOnConflicts] = useState<boolean>(true);
+  const [notifyDailyStandup, setNotifyDailyStandup] = useState<boolean>(true);
+  const [notifyStaleBranches, setNotifyStaleBranches] = useState<boolean>(true);
+
+  const [isSavingWebhooks, setIsSavingWebhooks] = useState(false);
+  const [webhooksSavedSuccessfully, setWebhooksSavedSuccessfully] = useState(false);
+
   useEffect(() => {
     if (settings) {
       setStaleThreshold(settings.staleThresholdDays);
       setActiveWindow(settings.activeWindowHours);
+      setSlackUrl(settings.slackWebhookUrl || "");
+      setDiscordUrl(settings.discordWebhookUrl || "");
+      setNotifyOnConflicts(settings.notifyOnConflicts ?? true);
+      setNotifyDailyStandup(settings.notifyDailyStandup ?? true);
+      setNotifyStaleBranches(settings.notifyStaleBranches ?? true);
     }
   }, [settings]);
 
@@ -57,6 +72,11 @@ export default function SettingsPage() {
         installationId: settings.installationId,
         staleThresholdDays: newStale as number,
         activeWindowHours: newWindow as number,
+        slackWebhookUrl: slackUrl,
+        discordWebhookUrl: discordUrl,
+        notifyOnConflicts,
+        notifyDailyStandup,
+        notifyStaleBranches,
       });
       setSavedKey(key);
       setTimeout(() => setSavedKey(null), 2000);
@@ -65,12 +85,37 @@ export default function SettingsPage() {
     }
   };
 
+  const handleSaveWebhooks = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!settings) return;
+
+    setIsSavingWebhooks(true);
+    try {
+      await updateSettings({
+        installationId: settings.installationId,
+        staleThresholdDays: staleThreshold ?? 7,
+        activeWindowHours: activeWindow ?? 48,
+        slackWebhookUrl: slackUrl,
+        discordWebhookUrl: discordUrl,
+        notifyOnConflicts,
+        notifyDailyStandup,
+        notifyStaleBranches,
+      });
+      setWebhooksSavedSuccessfully(true);
+      setTimeout(() => setWebhooksSavedSuccessfully(false), 2000);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSavingWebhooks(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight mb-1">System Settings</h1>
-        <p className="text-sm text-muted-foreground">Manage your GitHub integration, AI behavior, and team permissions.</p>
+        <p className="text-sm text-muted-foreground">Manage your GitHub integration, AI behavior, team webhooks, and permissions.</p>
       </div>
 
       <div className="max-w-2xl grid gap-5">
@@ -191,11 +236,120 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* Auto-save notice */}
           <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
             <Check size={12} className="text-green-500" />
             Changes are saved automatically to the database.
           </div>
+        </Section>
+
+        {/* Webhooks & Integrations */}
+        <Section
+          icon={MessageSquare}
+          title="Team Integrations"
+          description="Send conflict alerts and standups directly to Slack or Discord."
+        >
+          <form onSubmit={handleSaveWebhooks} className="space-y-5">
+            {/* Slack URL */}
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-2">
+                Slack Incoming Webhook URL
+              </label>
+              <input
+                type="url"
+                value={slackUrl}
+                onChange={(e) => setSlackUrl(e.target.value)}
+                placeholder="https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+                className="input font-mono text-xs"
+              />
+            </div>
+
+            {/* Discord URL */}
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-2">
+                Discord Webhook URL
+              </label>
+              <input
+                type="url"
+                value={discordUrl}
+                onChange={(e) => setDiscordUrl(e.target.value)}
+                placeholder="https://discord.com/api/webhooks/000000000000000000/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                className="input font-mono text-xs"
+              />
+            </div>
+
+            {/* Toggles */}
+            <div className="space-y-3 pt-2">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-1">
+                Granular Alert Settings
+              </label>
+
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="notifyOnConflicts"
+                  checked={notifyOnConflicts}
+                  onChange={(e) => setNotifyOnConflicts(e.target.checked)}
+                  className="rounded border-border text-primary bg-muted focus:ring-primary focus:ring-2 w-4 h-4 cursor-pointer"
+                />
+                <label htmlFor="notifyOnConflicts" className="text-sm font-semibold select-none cursor-pointer">
+                  Notify on Overlapping Merge Conflicts
+                </label>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="notifyDailyStandup"
+                  checked={notifyDailyStandup}
+                  onChange={(e) => setNotifyDailyStandup(e.target.checked)}
+                  className="rounded border-border text-primary bg-muted focus:ring-primary focus:ring-2 w-4 h-4 cursor-pointer"
+                />
+                <label htmlFor="notifyDailyStandup" className="text-sm font-semibold select-none cursor-pointer">
+                  Notify on Daily AI Standup Summaries
+                </label>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="notifyStaleBranches"
+                  checked={notifyStaleBranches}
+                  onChange={(e) => setNotifyStaleBranches(e.target.checked)}
+                  className="rounded border-border text-primary bg-muted focus:ring-primary focus:ring-2 w-4 h-4 cursor-pointer"
+                />
+                <label htmlFor="notifyStaleBranches" className="text-sm font-semibold select-none cursor-pointer">
+                  Notify on Stale Development Branches
+                </label>
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div className="flex items-center justify-between pt-2">
+              <button
+                type="submit"
+                disabled={isSavingWebhooks || !settings}
+                className="btn-primary px-6"
+              >
+                {isSavingWebhooks ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Saving...
+                  </>
+                ) : webhooksSavedSuccessfully ? (
+                  <>
+                    <Check size={16} />
+                    Integrations Saved!
+                  </>
+                ) : (
+                  "Save Integrations"
+                )}
+              </button>
+
+              <div className="text-xs text-muted-foreground">
+                Set up webhooks to enable proactive workspace channels.
+              </div>
+            </div>
+          </form>
         </Section>
 
         {/* Security */}
