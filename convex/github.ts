@@ -3,36 +3,6 @@ import { v } from "convex/values";
 import { App } from "@octokit/app";
 import { api } from "./_generated/api";
 
-export const createGitHubIssue = action({
-  args: {
-    installId: v.number(),
-    repoFullName: v.string(),
-    title: v.string(),
-    body: v.string(),
-    labels: v.optional(v.array(v.string())),
-    assignee: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    const app = new App({
-      appId: process.env.GITHUB_APP_ID!,
-      privateKey: process.env.GITHUB_APP_PRIVATE_KEY!,
-    });
-    const octokit = await app.getInstallationOctokit(args.installId);
-    
-    const [owner, repo] = args.repoFullName.split("/");
-
-    const response = await octokit.request("POST /repos/{owner}/{repo}/issues", {
-      owner,
-      repo,
-      title: args.title,
-      body: args.body,
-      labels: args.labels,
-      assignees: args.assignee ? [args.assignee] : undefined,
-    });
-
-    return response.data.number;
-  },
-});
 
 export const processPRDescription = action({
   args: {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAction, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { Loader2, X, Sparkles, Check, ChevronDown, AlertTriangle } from "lucide-react";
+import { Loader2, X, Sparkles, Check, ChevronDown, AlertTriangle, Copy } from "lucide-react";
 
 // Intelligent client-side NLP fallback parser
 const localParseFallback = (rawText: string) => {
@@ -42,17 +42,16 @@ const localParseFallback = (rawText: string) => {
   };
 };
 
-export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function AIAssistantDrafter({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [text, setText] = useState("");
   const [isParsing, setIsParsing] = useState(false);
   const [preview, setPreview] = useState<any>(null);
-  const [isCreating, setIsCreating] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const [success, setSuccess] = useState(false);
   const [selectedRepoId, setSelectedRepoId] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const parseIssue = useAction(api.ai.parseIssue);
-  const createIssue = useAction(api.github.createGitHubIssue);
   const repos = useQuery(api.activity.getRepos);
 
   const handleParse = async () => {
@@ -88,65 +87,23 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
     }
   };
 
-  const handleCreate = async () => {
-    if (!preview || !selectedRepoId) return;
-    setError(null);
-
-    if (selectedRepoId === "mock-sandbox") {
-      setIsCreating(true);
-      try {
-        // Simulate issue creation delay
-        await new Promise((resolve) => setTimeout(resolve, 1200));
-        setSuccess(true);
-        setTimeout(() => {
-          setSuccess(false);
-          setPreview(null);
-          setText("");
-          setSelectedRepoId("");
-          onClose();
-        }, 2000);
-      } catch (err: any) {
-        setError("Failed to create issue in sandbox mode.");
-      } finally {
-        setIsCreating(false);
-      }
-      return;
-    }
-
-    const repo = repos?.find((r) => (r._id as string) === selectedRepoId);
-    if (!repo) {
-      setError("Selected repository not found in database.");
-      return;
-    }
-    if (!repo.githubInstallId) {
-      setError("GitHub app connection not found for this repository. Please configure permissions.");
-      return;
-    }
-
-    setIsCreating(true);
-    try {
-      await createIssue({
-        installId: repo.githubInstallId,
-        repoFullName: repo.fullName,
-        title: preview.title,
-        body: preview.body,
-        labels: preview.labels,
-        assignee: preview.assignee,
-      });
-      setSuccess(true);
-      setTimeout(() => {
-        setSuccess(false);
-        setPreview(null);
-        setText("");
-        setSelectedRepoId("");
-        onClose();
-      }, 2000);
-    } catch (err: any) {
-      console.error("GitHub issue creation failed:", err);
-      setError("Convex Action failed (likely missing GitHub App credentials or private key in the Convex backend). Select 'sandbox-repository (Mock Sandbox)' from the repository dropdown to try the full flow in sandbox simulation mode.");
-    } finally {
-      setIsCreating(false);
-    }
+  const handleCopy = async () => {
+    if (!preview) return;
+    
+    const formattedText = `### ${preview.title}\n\n${preview.body}\n\n**Assignee:** ${preview.assignee || "Unassigned"}\n**Estimate:** ${preview.estimate || "Not set"}\n**Labels:** ${preview.labels?.join(", ") || "None"}`;
+    
+    await navigator.clipboard.writeText(formattedText);
+    
+    setIsCopied(true);
+    setSuccess(true);
+    setTimeout(() => {
+      setIsCopied(false);
+      setSuccess(false);
+      setPreview(null);
+      setText("");
+      setSelectedRepoId("");
+      onClose();
+    }, 2000);
   };
 
   const handleClose = () => {
@@ -177,8 +134,8 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
               <Sparkles size={16} />
             </div>
             <div>
-              <h2 className="font-bold text-base">Create AI Issue</h2>
-              <p className="text-xs text-muted-foreground">Describe in plain English, AI does the rest</p>
+              <h2 className="font-bold text-base">AI Issue Drafter</h2>
+              <p className="text-xs text-muted-foreground">Craft the perfect issue description with AI</p>
             </div>
           </div>
           <button onClick={handleClose} className="btn-ghost p-2 rounded-lg">
@@ -194,8 +151,8 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
                 <Check size={28} className="text-green-500" />
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-1">Issue Created!</h3>
-                <p className="text-sm text-muted-foreground">Your issue has been posted to GitHub successfully.</p>
+                <h3 className="font-bold text-lg mb-1">Copied to Clipboard!</h3>
+                <p className="text-sm text-muted-foreground">You can now paste this description into GitHub.</p>
               </div>
             </div>
           ) : (
@@ -318,12 +275,12 @@ export default function NewIssueModal({ isOpen, onClose }: { isOpen: boolean; on
                       Edit Input
                     </button>
                     <button
-                      onClick={handleCreate}
-                      disabled={isCreating}
+                      onClick={handleCopy}
+                      disabled={isCopied}
                       className="btn-primary flex-1"
                     >
-                      {isCreating ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />}
-                      {isCreating ? "Creating..." : "Create on GitHub"}
+                      {isCopied ? <Check size={15} /> : <Copy size={15} />}
+                      {isCopied ? "Copied!" : "Copy to Clipboard"}
                     </button>
                   </div>
                 </div>

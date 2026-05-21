@@ -30,7 +30,7 @@ const demoConflict = {
   author1: "alex",
   author2: "sarah",
   conflictingFiles: ["src/app/dashboard/layout.tsx", "src/app/globals.css"],
-  detectedAt: Date.now(),
+  detectedAt: 1779279234000, // Static baseline timestamp to avoid server/client mismatch
   dismissed: false,
   repoName: "Recon-Demo-Sandbox",
 };
@@ -189,6 +189,11 @@ function ConflictPlaygroundContent() {
   const [terminalLogs, setTerminalLogs] = useState<string[]>([
     "System ready. Awaiting user action...",
   ]);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const activeConflict = isDemo ? demoConflict : conflict;
 
@@ -429,7 +434,7 @@ ${activeFileVersions.branch2Code}
             </div>
             <p className="text-xs text-muted-foreground">
               Repository: <span className="font-semibold text-foreground font-mono">{activeConflict.repoName}</span> • 
-              Detected {new Date(activeConflict.detectedAt).toLocaleString()}
+              Detected {isMounted ? new Date(activeConflict.detectedAt).toLocaleString() : ""}
             </p>
           </div>
 
