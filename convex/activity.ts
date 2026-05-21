@@ -182,12 +182,3 @@ export const getStandups = query({
   },
 });
 
-export const getRecentPRs = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db
-      .query("pullRequests")
-      .order("desc")
-      .take(15);
-  },
-});

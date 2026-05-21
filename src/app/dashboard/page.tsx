@@ -3,7 +3,7 @@
 import DashboardLayout from "@/components/dashboard-layout";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { AlertTriangle, Clock, GitBranch, Terminal, Layers, FileCode, Plus, Filter, Sparkles, GitPullRequest } from "lucide-react";
+import { AlertTriangle, Clock, GitBranch, Terminal, Layers, FileCode, Plus, Filter, Sparkles } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,6 @@ export default function DashboardPage() {
   const activity = useQuery(api.activity.getLatestActivity);
   const conflicts = useQuery(api.activity.getActiveConflicts);
   const repos = useQuery(api.activity.getRepos);
-  const recentPRs = useQuery(api.activity.getRecentPRs);
   const [selectedRepoId, setSelectedRepoId] = useState<string>("all");
   const [isIssueOpen, setIsIssueOpen] = useState(false);
 
@@ -220,59 +219,6 @@ export default function DashboardPage() {
                       </span>
                     )}
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Recent PRs Feed */}
-      <div className="mt-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-            <GitPullRequest size={14} />
-            Recent Pull Requests (AI Analyzed)
-          </h2>
-        </div>
-
-        {!recentPRs ? (
-           <div className="space-y-3">
-             <div className="h-16 skeleton rounded-xl w-full" />
-             <div className="h-16 skeleton rounded-xl w-full" />
-           </div>
-        ) : recentPRs.length === 0 ? (
-          <div className="py-12 text-center border-2 border-dashed rounded-2xl">
-            <GitPullRequest className="mx-auto text-muted-foreground/30 mb-4" size={32} />
-            <h3 className="text-sm font-semibold mb-1">No pull requests found</h3>
-            <p className="text-xs text-muted-foreground">Open a PR to see Recon automatically analyze it.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {recentPRs.map((pr, i) => (
-              <div key={pr._id} className="p-4 rounded-xl border bg-card flex items-center justify-between group">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                    <GitPullRequest size={14} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold flex items-center gap-2">
-                      {pr.title} <span className="text-muted-foreground font-mono text-xs">#{pr.prNumber}</span>
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Opened by <span className="font-medium text-foreground">{pr.author}</span> • {formatDistanceToNow(pr.openedAt, { addSuffix: true })}
-                    </p>
-                  </div>
-                </div>
-                <div>
-                  {pr.descriptionGenerated ? (
-                    <span className="status-badge status-info text-[10px] flex items-center gap-1">
-                      <Sparkles size={10} />
-                      AI Analyzed
-                    </span>
-                  ) : (
-                    <span className="status-badge status-warning text-[10px]">Pending Analysis...</span>
-                  )}
                 </div>
               </div>
             ))}
