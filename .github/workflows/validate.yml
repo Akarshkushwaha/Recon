@@ -1,0 +1,37 @@
+name: Codebase Validation 📡
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Build and Lint Validation
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-node-version: '20'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm install --legacy-peer-deps
+
+    - name: Verify Types and Build Compilation
+      run: npm run build
+      env:
+        # Provide dummy variables for Next.js build compilation step
+        NEXT_PUBLIC_CONVEX_URL: "https://dummy-url.convex.cloud"
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_dHVtbXktY2xlcmstNDguY2xlcmsuYWNjb3VudHMuZGV2JA"
+        CLERK_SECRET_KEY: "sk_test_dummyclerksecret"
+        CLERK_JWT_ISSUER_DOMAIN: "https://dummy-clerk.clerk.accounts.dev"
+
+    - name: Run Code Linter
+      run: npm run lint

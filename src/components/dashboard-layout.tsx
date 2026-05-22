@@ -16,7 +16,6 @@ const NAV = [
   { href: "/dashboard/standups", icon: Calendar, label: "Team Standups" },
   { href: "/dashboard/changelogs", icon: FileText, label: "Changelogs" },
   { href: "/dashboard/analytics", icon: BarChart2, label: "Analytics" },
-  { href: "/dashboard/ai-assistant", icon: Sparkles, label: "AI Copilots" },
 ];
 
 function NavItem({ href, icon: Icon, label }: { href: string; icon: any; label: string }) {
