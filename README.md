@@ -1,27 +1,33 @@
-# 📡 RECON 
+# 📡 Recon
 
-**The real-time pulse of your development team.** Recon helps engineering teams maintain absolute awareness of code changes across all branches, detecting conflicts *before* they hit the PR phase and automating the repetitive tasks of daily standups and PR documentation.
+### **The real-time pulse and early warning system for engineering teams.**
 
-🚀 **Live Deployed Application:** [https://recon-henna.vercel.app](https://recon-henna.vercel.app/)
+Recon connects to your GitHub repositories to give your team instant, live visibility into active branches, incoming code changes, and potential conflicts **before** they become merge nightmares. By intercepting push events in real-time, Recon flags code collisions early and automates tedious tasks like daily standups, pull request documentation, and changelog generation using AI.
 
-![Recon Dashboard](https://images.unsplash.com/photo-1551288049-bbbda5366392?auto=format&fit=crop&q=80&w=1200)
+🔗 **Live Deployed Application:** [recon-henna.vercel.app](https://recon-henna.vercel.app)
+
+---
+
+## ⚡ Why Recon?
+
+In fast-moving development teams, coordination is a constant bottleneck. Developers touch the same files on different branches, leading to painful merge conflicts at the end of a sprint. Recon acts as a live, automated coordination layer, shifting conflict resolution left and keeping everyone in sync without overhead.
 
 ## 🚀 Key Features
 
-### 1. Live Awareness Feed
-Track every push across every branch in real-time. No more "Who is working on what?" — Recon shows you the active heartbeat of your repositories.
+### 🔍 Real-Time Activity Feed
+No more asking *"who is working on what?"* Track every push across every branch with a high-fidelity stream that updates live.
 
-### 2. Early Conflict Detection
-Recon scans file paths in every push. If two developers are modifying the same files on different branches, Recon alerts you instantly so you can coordinate early.
+### ⚠️ Early Conflict Detection & Visual Playground
+Recon automatically analyzes modified paths on every push. The moment two developers edit the same file on separate branches, Recon alerts you and hosts an **interactive visual Playground** to resolve overlaps side-by-side.
 
-### 3. AI-Powered Standups
-Stop manually writing "What I did yesterday." Recon analyzes your commit history and generates structured daily digests automatically.
+### ✍️ AI-Powered Daily Standups
+Stop manually writing daily updates. Recon analyzes your branch commit history and uses Groq (Llama 3.3) to automatically draft structured standups for you.
 
-### 4. Smart PR Descriptions
-Open a Pull Request and let Gemini AI analyze your code diffs. Recon automatically populates your PR description with a clear summary of changes.
+### 📝 Automated PR Descriptions
+Open a Pull Request with an empty body and let Recon handle the docs. Gemini 2.0 Flash analyzes the code diffs and writes a clear, reviewable, structured description of the changes.
 
-### 5. NL to GitHub Issues
-Describe a bug or feature in plain English, and Recon (powered by Groq) will convert it into a structured GitHub Issue with labels and assignees.
+### 🎯 AI Issue Drafter
+Describe a bug or feature in plain English. Recon structures it into a polished, markdown-formatted GitHub Issue complete with title, label recommendations, and estimates, ready to copy to your clipboard.
 
 ## 🛠️ Tech Stack
 
