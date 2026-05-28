@@ -108,6 +108,18 @@
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 rounded-xl bg-transparent text-gray-600 font-medium hover:bg-gray-100 hover:text-gray-900 transition-all;
   }
+  
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100/50 transition-all;
+  }
+  
+  .nav-item-active {
+    @apply bg-violet-50 text-violet-700 hover:bg-violet-100/50 hover:text-violet-800 font-semibold;
+  }
+
+  .section-divider {
+    @apply h-px w-full bg-gray-200;
+  }
 }
 
 /* Skeleton */
