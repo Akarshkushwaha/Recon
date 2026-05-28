@@ -338,6 +338,125 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <section id="pricing" className="py-28 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="status-badge status-warning mb-5 mx-auto w-fit">Transparent Pricing</div>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-5">
+              Simple pricing for<br />
+              <span className="gradient-text">engineering teams.</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+              Start for free, upgrade when you need more power and AI integrations.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Free Tier */}
+            <div className="bento-card flex flex-col">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold mb-2">Hobby</h3>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-4xl font-black">$0</span>
+                  <span className="text-muted-foreground">/mo</span>
+                </div>
+                <p className="text-sm text-muted-foreground">Perfect for solo developers and side projects.</p>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Check size={16} className="text-primary shrink-0" /> 1 Repository
+                </li>
+                <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Check size={16} className="text-primary shrink-0" /> Live Conflict Detection
+                </li>
+                <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Check size={16} className="text-primary shrink-0" /> Basic Analytics
+                </li>
+                <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Check size={16} className="text-primary shrink-0" /> Community Support
+                </li>
+              </ul>
+              <SignedOut>
+                <SignUpButton mode="modal">
+                  <button className="btn-secondary w-full py-3">Get Started Free</button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <Link href="/dashboard" className="btn-secondary w-full py-3 text-center">Go to Dashboard</Link>
+              </SignedIn>
+            </div>
+
+            {/* Pro Tier */}
+            <div className="bento-card flex flex-col relative border-primary/50 shadow-lg shadow-primary/10">
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-violet-500 rounded-t-2xl" />
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                <span className="status-badge status-info bg-background">Most Popular</span>
+              </div>
+              <div className="mb-6 mt-2">
+                <h3 className="text-xl font-bold mb-2">Pro</h3>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-4xl font-black">$19</span>
+                  <span className="text-muted-foreground">/user/mo</span>
+                </div>
+                <p className="text-sm text-muted-foreground">For engineering teams shipping fast.</p>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                <li className="flex items-center gap-3 text-sm text-foreground font-medium">
+                  <Check size={16} className="text-primary shrink-0" /> Unlimited Repositories
+                </li>
+                <li className="flex items-center gap-3 text-sm text-foreground font-medium">
+                  <Check size={16} className="text-primary shrink-0" /> AI Standups & PR Drafts
+                </li>
+                <li className="flex items-center gap-3 text-sm text-foreground font-medium">
+                  <Check size={16} className="text-primary shrink-0" /> Slack & Discord Webhooks
+                </li>
+                <li className="flex items-center gap-3 text-sm text-foreground font-medium">
+                  <Check size={16} className="text-primary shrink-0" /> Stale Branch Alerting
+                </li>
+                <li className="flex items-center gap-3 text-sm text-foreground font-medium">
+                  <Check size={16} className="text-primary shrink-0" /> Priority Support
+                </li>
+              </ul>
+              <SignedOut>
+                <SignUpButton mode="modal">
+                  <button className="btn-primary w-full py-3">Start 14-Day Trial</button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <button className="btn-primary w-full py-3">Upgrade to Pro</button>
+              </SignedIn>
+            </div>
+
+            {/* Enterprise Tier */}
+            <div className="bento-card flex flex-col">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold mb-2">Enterprise</h3>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-4xl font-black">Custom</span>
+                </div>
+                <p className="text-sm text-muted-foreground">For large organizations with strict security needs.</p>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Check size={16} className="text-primary shrink-0" /> Dedicated VPC Deployment
+                </li>
+                <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Check size={16} className="text-primary shrink-0" /> Single Sign-On (SAML/SSO)
+                </li>
+                <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Check size={16} className="text-primary shrink-0" /> Custom AI Models (Bring Your Own)
+                </li>
+                <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Check size={16} className="text-primary shrink-0" /> 24/7 Phone Support & SLA
+                </li>
+              </ul>
+              <button className="btn-secondary w-full py-3">Contact Sales</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-28 px-6">
         <div className="max-w-3xl mx-auto text-center">
