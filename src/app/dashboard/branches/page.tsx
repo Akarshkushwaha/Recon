@@ -66,49 +66,50 @@ export default function BranchesPage() {
             return (
               <div
                 key={branch._id}
-                className="bento-card group relative overflow-hidden"
+                className="dashboard-card group flex flex-col justify-between"
                 style={{ animationDelay: `${i * 50}ms` }}
               >
-                {/* Big background icon */}
-                <div className="absolute -right-4 -bottom-4 opacity-[0.04] group-hover:opacity-[0.07] transition-opacity">
-                  <GitBranch size={100} />
-                </div>
-
-                {/* Author */}
-                <div className="flex items-center gap-2.5 mb-4">
-                  <img
-                    src={branch.authorAvatar}
-                    alt={branch.authorLogin}
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                  <span className="text-sm font-semibold">{branch.authorLogin}</span>
-                </div>
-
-                {/* Branch name */}
-                <div className="flex items-center gap-2 mb-4">
-                  <GitBranch size={15} className="text-primary flex-shrink-0" />
-                  <span className="font-bold text-sm truncate font-mono">{branch.branchName}</span>
-                </div>
-
-                {/* Meta */}
-                <div className="space-y-1.5 mb-4">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Clock size={12} />
-                    {formatDistanceToNow(branch.lastPushTimestamp, { addSuffix: true })}
+                <div>
+                  {/* Header: Author & Status */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={branch.authorAvatar}
+                        alt={branch.authorLogin}
+                        className="w-8 h-8 rounded-full border border-gray-100 object-cover"
+                      />
+                      <div>
+                        <span className="text-sm font-semibold text-gray-900 block leading-tight">{branch.authorLogin}</span>
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                          <Clock size={10} />
+                          {formatDistanceToNow(branch.lastPushTimestamp, { addSuffix: true })}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-1.5">
+                      <span className="status-badge status-live text-[10px] px-2 py-0.5">Active</span>
+                      {isStale && (
+                        <span className="status-badge status-warning text-[10px] px-2 py-0.5">Stale</span>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <HardDrive size={12} />
+
+                  {/* Branch name */}
+                  <div className="flex items-center gap-2 mb-3 bg-gray-50/50 p-2 rounded-lg border border-gray-100">
+                    <GitBranch size={14} className="text-primary flex-shrink-0" />
+                    <span className="font-bold text-sm truncate font-mono text-gray-800">{branch.branchName}</span>
+                  </div>
+                </div>
+
+                {/* Footer Meta */}
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-2">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
+                    <HardDrive size={12} className="text-gray-400" />
                     {branch.filesChanged.length} file{branch.filesChanged.length !== 1 ? "s" : ""} modified
                   </div>
-                </div>
-
-                {/* Tags */}
-                <div className="flex gap-2 flex-wrap">
-                  <span className="status-badge status-live">Active</span>
-                  {isStale && (
-                    <span className="status-badge status-warning">Stale</span>
-                  )}
-                  <span className="status-badge status-info">{branch.commitCount} commits</span>
+                  <span className="text-[11px] font-bold text-violet-600 bg-violet-50 px-2 py-1 rounded-md border border-violet-100">
+                    {branch.commitCount} commits
+                  </span>
                 </div>
               </div>
             );

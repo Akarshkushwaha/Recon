@@ -64,6 +64,10 @@
   .bento-card {
     @apply relative overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 p-8;
   }
+
+  .dashboard-card {
+    @apply relative bg-white border border-gray-200 shadow-sm rounded-xl hover:shadow-md transition-shadow p-5;
+  }
   
   .status-badge {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-sm;
@@ -79,6 +83,10 @@
   
   .status-warning {
     @apply bg-orange-50 text-orange-700 border border-orange-200;
+  }
+  
+  .status-danger {
+    @apply bg-red-50 text-red-700 border border-red-200;
   }
 
   .pulse-dot {
@@ -107,6 +115,14 @@
   
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 rounded-xl bg-transparent text-gray-600 font-medium hover:bg-gray-100 hover:text-gray-900 transition-all;
+  }
+  
+  .input {
+    @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all;
+  }
+  
+  .code-tag {
+    @apply inline-flex items-center gap-1 rounded-md bg-gray-100 border border-gray-200 px-2 py-0.5 text-[11px] font-mono font-medium text-gray-600;
   }
   
   .nav-item {

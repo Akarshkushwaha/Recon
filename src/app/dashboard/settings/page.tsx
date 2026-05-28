@@ -8,7 +8,7 @@ import { api } from "../../../../convex/_generated/api";
 
 function Section({ icon: Icon, title, description, children }: any) {
   return (
-    <div className="bento-card">
+    <div className="dashboard-card">
       <div className="flex items-start gap-4 pb-5 mb-5 border-b">
         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
           <Icon size={20} />

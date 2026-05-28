@@ -11,7 +11,7 @@ import AIAssistantDrafter from "@/components/new-issue-modal";
 
 function StatCard({ label, value, sub, icon: Icon, colorClass }: { label: string; value: string | number; sub?: string; icon: any; colorClass: string }) {
   return (
-    <div className="bento-card group hover:scale-[1.02] transition-all duration-300 relative overflow-hidden bg-gradient-to-br from-card to-card/90">
+    <div className="dashboard-card group hover:scale-[1.02] transition-all duration-300 relative overflow-hidden bg-gradient-to-br from-card to-card/90">
       {/* Top accent line */}
       <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${colorClass} opacity-80 group-hover:opacity-100 transition-opacity duration-300`} />
       <div className="flex items-start justify-between">
@@ -180,7 +180,7 @@ export default function DashboardPage() {
             {filteredActivity.map((item, i) => (
               <div
                 key={item._id}
-                className="bento-card flex items-start gap-5 p-5 group"
+                className="dashboard-card flex items-start gap-5 p-4 group"
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 {/* Avatar */}

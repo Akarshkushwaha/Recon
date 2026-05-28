@@ -10,7 +10,7 @@ import ReactMarkdown from "react-markdown";
 
 function StandupCard({ author, yesterday, today, blockers, date }: any) {
   return (
-    <div className="bento-card animate-fade-up">
+    <div className="dashboard-card animate-fade-up">
       {/* Author header */}
       <div className="flex items-center gap-3 pb-4 mb-4 border-b">
         <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">

@@ -102,7 +102,7 @@ export default function AnalyticsPage() {
           
           {/* 1. CONTRIBUTOR HEATMAP */}
           {activeTab === "heatmap" && (
-            <div className="bento-card animate-fade-in">
+            <div className="dashboard-card animate-fade-in">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-bold flex items-center gap-2">
@@ -175,7 +175,7 @@ export default function AnalyticsPage() {
           {activeTab === "leaderboard" && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
               {/* Leaderboard panel */}
-              <div className="bento-card md:col-span-2">
+              <div className="dashboard-card md:col-span-2">
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h2 className="text-lg font-bold flex items-center gap-2">
@@ -229,7 +229,7 @@ export default function AnalyticsPage() {
               </div>
 
               {/* Monthly All-Stars Sidebar */}
-              <div className="bento-card">
+              <div className="dashboard-card">
                 <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-4">Monthly All-Stars</h3>
                 {!leaderboard ? (
                   <div className="space-y-2">
@@ -255,7 +255,7 @@ export default function AnalyticsPage() {
 
           {/* 3. PR REVIEW VELOCITY */}
           {activeTab === "velocity" && (
-            <div className="bento-card animate-fade-in">
+            <div className="dashboard-card animate-fade-in">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-bold flex items-center gap-2">
@@ -329,7 +329,7 @@ export default function AnalyticsPage() {
 
           {/* 4. CODE OWNERSHIP TREE */}
           {activeTab === "ownership" && (
-            <div className="bento-card animate-fade-in">
+            <div className="dashboard-card animate-fade-in">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-bold flex items-center gap-2">
