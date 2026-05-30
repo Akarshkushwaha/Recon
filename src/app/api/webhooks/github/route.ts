@@ -27,10 +27,12 @@ export async function POST(req: Request) {
       branchName: event.ref.replace("refs/heads/", ""),
       authorLogin: event.pusher.name,
       authorAvatar: event.sender.avatar_url,
-      filesChanged: event.commits.flatMap((c: any) => [
-        ...c.added,
-        ...c.modified,
-      ]),
+      filesChanged: event.commits
+        .filter((c: any) => c.distinct)
+        .flatMap((c: any) => [
+          ...c.added,
+          ...c.modified,
+        ]),
       commitCount: event.commits.length,
     });
 
