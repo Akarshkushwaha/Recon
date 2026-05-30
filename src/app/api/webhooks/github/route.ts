@@ -34,6 +34,12 @@ export async function POST(req: Request) {
           ...c.modified,
         ]),
       commitCount: event.commits.length,
+      commits: event.commits.map((c: any) => ({
+        id: c.id,
+        message: c.message,
+        url: c.url,
+        timestamp: c.timestamp,
+      })),
     });
 
     if (repoId) {
@@ -103,6 +109,23 @@ export async function POST(req: Request) {
         installId: event.installation.id,
         repoFullName: event.repository.full_name,
         prNumber: event.pull_request.number,
+      });
+    }
+  }
+
+  if (eventName === "issues" && ["opened", "edited", "closed", "reopened", "assigned"].includes(event.action)) {
+    const repo = await convex.query(api.activity.getRepoByGithubId, {
+      githubRepoId: event.repository.id,
+    });
+    
+    if (repo) {
+      await convex.mutation(api.webhooks.handleIssue, {
+        repoId: repo._id,
+        issueNumber: event.issue.number,
+        title: event.issue.title,
+        state: event.issue.state,
+        assignee: event.issue.assignee?.login,
+        url: event.issue.html_url,
       });
     }
   }

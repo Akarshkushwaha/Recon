@@ -198,21 +198,31 @@ function ConflictPlaygroundContent() {
   const activeConflict = isDemo ? demoConflict : conflict;
 
   // Fetch versions of the selected file
-  const fileVersions = useQuery(
-    api.conflicts.getFileVersionsForConflict,
-    conflictId && selectedFile ? { conflictId, filePath: selectedFile } : "skip"
-  );
+  const getFileVersionsAction = useAction(api.conflicts.getFileVersionsForConflict);
+  const [activeFileVersions, setActiveFileVersions] = useState<any>(null);
 
-  const activeFileVersions = isDemo
-    ? (selectedFile ? {
+  useEffect(() => {
+    if (isDemo && selectedFile) {
+      setActiveFileVersions({
         branch1: demoConflict.branch1,
         branch2: demoConflict.branch2,
         author1: demoConflict.author1,
         author2: demoConflict.author2,
         branch1Code: demoFileVersions[selectedFile]?.branch1Code ?? "",
         branch2Code: demoFileVersions[selectedFile]?.branch2Code ?? "",
-      } : null)
-    : fileVersions;
+      });
+      return;
+    }
+
+    if (conflictId && selectedFile) {
+      setActiveFileVersions(null);
+      getFileVersionsAction({ conflictId, filePath: selectedFile })
+        .then((data) => setActiveFileVersions(data))
+        .catch((err) => {
+          console.error("Failed to load file versions", err);
+        });
+    }
+  }, [conflictId, selectedFile, isDemo]);
 
   // Set initial file once conflict is loaded
   useEffect(() => {

@@ -26,6 +26,19 @@ export default defineSchema({
     lastPushTimestamp: v.number(),
   }).index("by_repo_and_branch", ["repoId", "branchName"]),
 
+  commits: defineTable({
+    repoId: v.id("repos"),
+    sha: v.string(),
+    message: v.string(),
+    authorLogin: v.string(),
+    authorAvatar: v.string(),
+    branchName: v.string(),
+    url: v.string(),
+    timestamp: v.number(),
+  }).index("by_repo", ["repoId"])
+    .index("by_author", ["authorLogin"])
+    .index("by_repo_and_branch", ["repoId", "branchName"]),
+
   conflicts: defineTable({
     repoId: v.id("repos"),
     branch1: v.string(),
@@ -50,7 +63,20 @@ export default defineSchema({
     openedAt: v.number(),
     updatedAt: v.number(),
     closedAt: v.optional(v.number()),
+    commits: v.optional(v.array(v.string())), // Array of shas
+    linkedIssue: v.optional(v.number()), // Issue number
   }).index("by_repo_and_pr", ["repoId", "prNumber"]),
+
+  issues: defineTable({
+    repoId: v.id("repos"),
+    issueNumber: v.number(),
+    title: v.string(),
+    state: v.string(),
+    assignee: v.optional(v.string()),
+    url: v.string(),
+    updatedAt: v.number(),
+  }).index("by_repo", ["repoId"])
+    .index("by_repo_and_issue", ["repoId", "issueNumber"]),
 
   staleAlerts: defineTable({
     repoId: v.id("repos"),
@@ -127,3 +153,5 @@ export default defineSchema({
     createdAt: v.number(),
   }),
 });
+
+

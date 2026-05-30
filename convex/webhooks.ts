@@ -9,6 +9,12 @@ export const handlePush = mutation({
     authorAvatar: v.string(),
     filesChanged: v.array(v.string()),
     commitCount: v.number(),
+    commits: v.array(v.object({
+      id: v.string(),
+      message: v.string(),
+      url: v.string(),
+      timestamp: v.string()
+    })),
   },
   handler: async (ctx, args) => {
     // 1. Find or Create Repo
@@ -44,6 +50,20 @@ export const handlePush = mutation({
         filesChanged: args.filesChanged,
         commitCount: args.commitCount,
         lastPushTimestamp: Date.now(),
+      });
+    }
+
+    // 2.5 Insert individual commits
+    for (const commit of args.commits) {
+      await ctx.db.insert("commits", {
+        repoId: repo._id,
+        sha: commit.id,
+        message: commit.message,
+        authorLogin: args.authorLogin,
+        authorAvatar: args.authorAvatar,
+        branchName: args.branchName,
+        url: commit.url,
+        timestamp: new Date(commit.timestamp).getTime(),
       });
     }
 
@@ -192,3 +212,6 @@ export const markPRDescriptionGenerated = mutation({
     }
   },
 });
+
+
+export const handleIssue = mutation({ args: { repoId: v.id("repos"), issueNumber: v.number(), title: v.string(), state: v.string(), assignee: v.optional(v.string()), url: v.string() }, handler: async (ctx, args) => { const existing = await ctx.db.query("issues").withIndex("by_repo_and_issue", q => q.eq("repoId", args.repoId).eq("issueNumber", args.issueNumber)).unique(); if (existing) { await ctx.db.patch(existing._id, { title: args.title, state: args.state, assignee: args.assignee, updatedAt: Date.now() }); } else { await ctx.db.insert("issues", { repoId: args.repoId, issueNumber: args.issueNumber, title: args.title, state: args.state, assignee: args.assignee, url: args.url, updatedAt: Date.now() }); } } });
