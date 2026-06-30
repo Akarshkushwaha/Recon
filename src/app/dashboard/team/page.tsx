@@ -179,7 +179,7 @@ export default function TeamRadarPage() {
         </div>
       )}
 
-      {!repos || !team ? (
+      {!repos || (repos.length > 0 && !team) ? (
         <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30">
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="animate-spin text-primary" size={32} />
