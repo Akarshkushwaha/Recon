@@ -121,7 +121,7 @@ function DeveloperCard({ dev }: { dev: any }) {
                     </p>
                     <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground">
                       <span className="bg-secondary/50 px-1.5 py-0.5 rounded">{commit.branchName}</span>
-                      <span>{new Date(commit.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                      <span suppressHydrationWarning>{new Date(commit.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                     </div>
                   </div>
                 ))

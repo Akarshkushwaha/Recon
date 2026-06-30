@@ -44,8 +44,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     if (user) {
       const githubAccounts = (user.externalAccounts || [])
-        .filter(a => a.provider.includes("github"))
-        .map(a => a.username)
+        .filter(a => a?.provider?.includes("github"))
+        .map(a => a?.username)
         .filter(Boolean) as string[];
         
       if (githubAccounts.length > 0) {
