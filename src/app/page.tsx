@@ -4,7 +4,8 @@ import Link from "next/link";
 import { 
   ArrowRight, Activity, Shield, Zap, Cpu, Code2, GitMerge, 
   GitBranch, Sparkles, ChevronRight, Check, Star, Users, 
-  Clock, TrendingUp
+  Clock, TrendingUp, LayoutDashboard, FolderGit2, Github,
+  Settings, Search, Bell, AlertCircle, Rocket, Server
 } from "lucide-react";
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
 
@@ -206,54 +207,145 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Dashboard preview card - Light Mode Edition */}
+        {/* Dashboard preview card - Dark Mode Edition */}
         <div className="relative max-w-5xl mx-auto mt-20 animate-fade-up animate-delay-500 z-20">
-          <div className="absolute -inset-1 bg-gradient-to-br from-violet-200 via-white to-fuchsia-200 rounded-[2rem] blur-xl opacity-70" />
-          <div className="relative rounded-[1.5rem] border border-gray-200/60 bg-white/70 shadow-2xl overflow-hidden backdrop-blur-xl">
-            {/* Toolbar */}
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 bg-white/50">
-              <div className="flex gap-2">
-                <div className="w-3 h-3 rounded-full bg-gray-300" />
-                <div className="w-3 h-3 rounded-full bg-gray-300" />
-                <div className="w-3 h-3 rounded-full bg-gray-300" />
+          <div className="absolute -inset-1 bg-gradient-to-br from-violet-500 via-fuchsia-500 to-orange-500 rounded-[2rem] blur-xl opacity-30" />
+          <div className="relative rounded-[1.5rem] border border-[#2A2A2A] bg-[#121212] shadow-2xl overflow-hidden">
+            {/* Navbar */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#2A2A2A] bg-[#1A1A1A]">
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2 text-white font-bold text-lg">
+                  <div className="w-6 h-6 rounded-md bg-transparent border border-gray-600 flex items-center justify-center">
+                    <div className="w-3 h-3 border border-gray-400 rounded-sm"></div>
+                  </div>
+                  DevDash
+                </div>
+                <div className="hidden md:flex items-center gap-1">
+                  <div className="px-3 py-1.5 bg-[#2A2A2A] rounded-md text-xs text-white font-medium flex items-center gap-2">
+                    <LayoutDashboard size={14} /> Dashboard
+                  </div>
+                  <div className="px-3 py-1.5 text-xs text-gray-400 font-medium flex items-center gap-2 hover:text-gray-200">
+                    <FolderGit2 size={14} /> Projects
+                  </div>
+                  <div className="px-3 py-1.5 text-xs text-gray-400 font-medium flex items-center gap-2 hover:text-gray-200">
+                    <Code2 size={14} /> Repos
+                  </div>
+                  <div className="px-3 py-1.5 text-xs text-gray-400 font-medium flex items-center gap-2 hover:text-gray-200">
+                    <Settings size={14} /> Settings
+                  </div>
+                  <div className="px-3 py-1.5 text-xs text-gray-400 font-medium flex items-center gap-2 hover:text-gray-200">
+                    <AlertCircle size={14} /> Support
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 mx-4 flex justify-center">
-                <div className="h-7 w-64 bg-gray-100/80 rounded-lg flex items-center justify-center">
-                  <span className="text-[11px] text-gray-500 font-medium">recon.dev/dashboard</span>
+              <div className="flex items-center gap-4">
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[#2A2A2A] border border-[#333333] rounded-md text-gray-400 text-xs w-48">
+                  <Search size={14} />
+                  <span>Search</span>
+                </div>
+                <Bell size={16} className="text-gray-400" />
+                <div className="w-6 h-6 rounded-full bg-gray-600 relative">
+                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border border-[#1A1A1A] rounded-full"></div>
                 </div>
               </div>
             </div>
-            {/* Fake dashboard content */}
-            <div className="p-8 bg-white/40">
+
+            {/* Main Content */}
+            <div className="p-8 bg-[#18181A]">
+              <div className="w-16 h-2 rounded bg-gray-600/50 mb-6"></div>
               <div className="flex items-center justify-between mb-8">
-                <div>
-                  <div className="h-8 w-48 skeleton rounded-lg mb-3" />
-                  <div className="h-4 w-72 skeleton rounded-md opacity-70" />
-                </div>
-                <div className="status-badge status-live bg-white shadow-sm">
-                  <span className="pulse-dot" />
-                  Live Activity
+                <h3 className="text-xl font-semibold text-white">Dashboard Overview</h3>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/20 rounded text-green-400 text-[10px] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                  Live Activity <span className="opacity-70 ml-1">ACTIVE</span>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-6 mb-8">
-                {[1,2,3].map(i => (
-                  <div key={i} className="p-6 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-                    <div className="h-3 w-20 skeleton rounded mb-4" />
-                    <div className="h-10 w-32 skeleton rounded" />
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-4">
-                {[1,2,3].map(i => (
-                  <div key={i} className="flex items-center gap-5 p-5 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-                    <div className="w-12 h-12 rounded-xl skeleton flex-shrink-0" />
-                    <div className="flex-1">
-                      <div className="h-4 w-56 skeleton rounded mb-3" />
-                      <div className="h-3 w-80 skeleton rounded opacity-70" />
+
+              {/* 4 Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                {[
+                  { title: "Loading title", value: "12", desc: "Active Projects", icon: FolderGit2, p1: "60%", p2: "w-20" },
+                  { title: "Loading Issues", value: "0", desc: "Open Issues", icon: AlertCircle, p1: "0%", p2: "w-24" },
+                  { title: "Loading title", value: "3", desc: "Deployments", icon: Rocket, p1: "40%", p2: "w-16" },
+                  { title: "Loading title", value: "--", desc: "Server Status", icon: Server, p1: "0%", p2: "w-20" },
+                ].map((card, i) => (
+                  <div key={i} className="p-5 rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] flex flex-col">
+                    <div className="flex items-center gap-2 text-gray-400 text-xs mb-4">
+                      <card.icon size={14} /> {card.title}
                     </div>
-                    <div className="h-8 w-24 skeleton rounded-full" />
+                    <div className="text-3xl font-bold text-white mb-1">{card.value}</div>
+                    <div className="text-[11px] text-gray-500 mb-6">{card.desc}</div>
+                    <div className="mt-auto flex flex-col gap-2">
+                      <div className="h-1.5 w-full bg-[#333] rounded-full overflow-hidden">
+                        <div className="h-full bg-gray-500 rounded-full" style={{ width: card.p1 }}></div>
+                      </div>
+                      <div className={`h-1.5 ${card.p2} bg-[#333] rounded-full`}></div>
+                    </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Bottom Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <h4 className="text-white text-lg font-medium mb-4">Activity Logs & Data Feeds</h4>
+                  <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-6">
+                    <h5 className="text-white text-xs font-semibold mb-6">Feed</h5>
+                    <div className="space-y-6">
+                      {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="flex gap-4 border-b border-[#2A2A2A] pb-6 last:border-0 last:pb-0">
+                          <div className="w-6 h-6 rounded-full bg-gray-300 shrink-0"></div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-10 bg-gray-400 rounded"></div>
+                                <span className="text-[10px] text-gray-400">and Project</span>
+                              </div>
+                              <div className="text-[10px] text-gray-500">15 minutes ago</div>
+                            </div>
+                            <div className="text-[10px] text-gray-500 mb-2">description</div>
+                            <div className="h-1.5 w-full bg-[#333] rounded mb-2"></div>
+                            <div className="h-1.5 w-2/3 bg-[#333] rounded"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-6 mb-6 mt-[44px]">
+                    <h4 className="text-white text-xs font-semibold mb-6">Repository Updates</h4>
+                    <div className="space-y-5">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="flex items-center gap-3 border-b border-[#2A2A2A] pb-5 last:border-0 last:pb-0">
+                          <div className="w-5 h-5 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
+                            <Github size={12} className="text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="h-1.5 w-full bg-[#444] rounded mb-2"></div>
+                            <div className="h-1.5 w-3/4 bg-[#333] rounded"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-6">
+                    <h4 className="text-white text-xs font-semibold mb-6">Latest Deployments</h4>
+                    <div className="space-y-5">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="flex items-center gap-3 border-b border-[#2A2A2A] pb-5 last:border-0 last:pb-0">
+                          <div className="w-5 h-5 rounded-full bg-gray-700 border border-gray-600 flex items-center justify-center shrink-0">
+                            <Rocket size={10} className="text-gray-400" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="h-1.5 w-full bg-[#444] rounded mb-2"></div>
+                            <div className="h-1.5 w-3/4 bg-[#333] rounded"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -364,11 +456,6 @@ export default function Home() {
                   <span className="text-gray-500 font-medium">/mo</span>
                 </div>
                 <p className="text-sm text-gray-500 font-medium mb-8">Everything you need to ship faster without conflicts.</p>
-                
-                {/* Dashboard Snapshot */}
-                <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-md">
-                  <img src="/images/dashboard-skeleton.png" alt="Recon Dashboard" className="w-full h-auto object-cover" />
-                </div>
               </div>
               
               <div className="grid sm:grid-cols-2 gap-4 mb-10">
