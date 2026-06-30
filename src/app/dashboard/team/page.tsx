@@ -179,7 +179,7 @@ export default function TeamRadarPage() {
         </div>
       )}
 
-      {!repos || (repos.length > 0 && !team) ? (
+      {!repos || (selectedRepoId && !team) ? (
         <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30">
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="animate-spin text-primary" size={32} />
@@ -194,7 +194,7 @@ export default function TeamRadarPage() {
             You need to install the GitHub App on a repository first.
           </p>
         </div>
-      ) : team.length === 0 ? (
+      ) : team?.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30 text-center px-4">
           <Users className="text-muted-foreground/30 mb-4" size={48} />
           <h3 className="text-lg font-bold mb-2">No Team Activity Detected</h3>
@@ -204,7 +204,7 @@ export default function TeamRadarPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          {team.map((dev: any) => (
+          {team?.map((dev: any) => (
             <DeveloperCard key={dev.authorLogin} dev={dev} />
           ))}
         </div>
