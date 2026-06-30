@@ -1,10 +1,25 @@
 # 📡 Recon
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
 ### **The real-time pulse and early warning system for engineering teams.**
 
 Recon connects to your GitHub repositories to give your team instant, live visibility into active branches, incoming code changes, and potential conflicts **before** they become merge nightmares. By intercepting push events in real-time, Recon flags code collisions early and automates tedious tasks like daily standups, pull request documentation, and changelog generation using AI.
 
 🔗 **Live Deployed Application:** [recon-henna.vercel.app](https://recon-henna.vercel.app)
+
+---
+
+## 📑 Table of Contents
+
+- [Why Recon?](#-why-recon)
+- [Key Features](#-key-features)
+- [Tech Stack](#️-tech-stack)
+- [Setup & Installation](#️-setup--installation)
+- [GitHub App Configuration](#-github-app-configuration)
+- [Open Source & Community](#-open-source--community)
+- [License](#-license)
 
 ---
 
@@ -94,6 +109,13 @@ To use the full power of Recon, create a GitHub App with these permissions:
 - **Metadata**: Read-only
 
 Subscribe to events: **Push**, **Pull request**, **Repository**, and **Installation target**.
+
+## 🌍 Open Source & Community
+
+Recon is proudly open source and we actively welcome community contributions! Whether you're fixing a bug, adding a new feature, or improving documentation, your help is appreciated.
+
+- **[Contributing Guide](CONTRIBUTING.md)**: Learn how to set up the project locally, our branching strategy, and how to submit a PR.
+- **[Code of Conduct](CODE_OF_CONDUCT.md)**: Please review our community guidelines to ensure a welcoming environment for everyone.
 
 ## 📄 License
 MIT License. See [LICENSE](LICENSE) for details.

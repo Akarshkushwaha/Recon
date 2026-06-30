@@ -1,0 +1,43 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Recon",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#3B82F6",
+    "light": "#60A5FA",
+    "dark": "#1D4ED8"
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:akarshkushwaha593@gmail.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://recon-henna.vercel.app"
+  },
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/Akarshkushwaha/Recon"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "docs/introduction",
+        "docs/quickstart"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/Akarshkushwaha/Recon"
+  }
+}

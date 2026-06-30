@@ -1,0 +1,68 @@
+---
+title: "Quickstart"
+description: "Learn how to get Recon running locally for development and testing."
+---
+
+## Prerequisites
+
+To run Recon locally, you will need:
+- **Node.js**: `v18.x` or higher (we recommend `v20.x` LTS)
+- **npm** or **yarn**
+
+## Installation
+
+Follow these steps to set up your local development environment:
+
+<Steps>
+  <Step title="Clone the repository">
+    First, clone the Recon repository to your local machine:
+    ```bash
+    git clone https://github.com/Akarshkushwaha/Recon.git
+    cd Recon
+    ```
+  </Step>
+  <Step title="Install dependencies">
+    Install the required packages using npm:
+    ```bash
+    npm install --legacy-peer-deps
+    ```
+  </Step>
+  <Step title="Configure Environment Variables">
+    Create a `.env.local` file in the root directory and add your API keys:
+    
+    ```env
+    # Convex
+    NEXT_PUBLIC_CONVEX_URL=your_convex_url
+    
+    # Clerk Auth
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_pub_key
+    CLERK_SECRET_KEY=your_clerk_secret_key
+    CLERK_JWT_ISSUER_DOMAIN=https://your-domain.clerk.accounts.dev
+    
+    # GitHub App Integration
+    GITHUB_APP_ID=your_app_id
+    GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
+    GITHUB_WEBHOOK_SECRET=your_secret
+    
+    # AI Models
+    GROQ_API_KEY=your_groq_key
+    GEMINI_API_KEY=your_gemini_key
+    ```
+  </Step>
+  <Step title="Run Locally">
+    Start the Convex backend server in one terminal:
+    ```bash
+    npx convex dev
+    ```
+    
+    In a new terminal, start the Next.js frontend:
+    ```bash
+    npm run dev
+    ```
+    Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+  </Step>
+</Steps>
+
+## Next Steps
+
+Now that you have Recon running, check out our [Contributing Guide](https://github.com/Akarshkushwaha/Recon/blob/main/CONTRIBUTING.md) to see how you can help improve the platform!

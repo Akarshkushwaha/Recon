@@ -28,6 +28,7 @@ Describe the manual or automated tests you ran to verify your changes. Provide d
 
 ## Checklist:
 
+- [ ] I have used the correct branch naming convention (`feature/` or `fix/`).
 - [ ] My code follows the premium styling guidelines and HSL design tokens of this project.
 - [ ] I have commented my code, particularly in hard-to-understand areas.
 - [ ] My changes generate no new warnings or console errors.

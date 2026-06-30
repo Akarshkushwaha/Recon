@@ -1,0 +1,54 @@
+---
+title: Introduction
+description: "Welcome to Recon's documentation. The real-time pulse and early warning system for engineering teams."
+---
+
+<img
+  className="block dark:hidden"
+  src="/images/hero-light.png"
+  alt="Hero Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hero-dark.png"
+  alt="Hero Dark"
+/>
+
+## What is Recon?
+
+In fast-moving development teams, coordination is a constant bottleneck. Developers touch the same files on different branches, leading to painful merge conflicts at the end of a sprint. 
+
+**Recon** connects to your GitHub repositories to give your team instant, live visibility into active branches, incoming code changes, and potential conflicts **before** they become merge nightmares. By intercepting push events in real-time, Recon flags code collisions early and automates tedious tasks like daily standups, pull request documentation, and changelog generation using AI.
+
+## Features
+
+<CardGroup cols={2}>
+  <Card
+    title="Early Conflict Detection"
+    icon="triangle-exclamation"
+    href="/docs/quickstart"
+  >
+    Detect overlaps when two developers edit the same file on separate branches, complete with an interactive Playground.
+  </Card>
+  <Card
+    title="Real-Time Activity Feed"
+    icon="activity"
+    href="/docs/quickstart"
+  >
+    Track every push across every branch with a high-fidelity stream that updates live.
+  </Card>
+  <Card
+    title="AI-Powered Standups"
+    icon="robot"
+    href="/docs/quickstart"
+  >
+    Automatically draft structured standups by analyzing branch commit history with Groq (Llama 3).
+  </Card>
+  <Card
+    title="Automated PR Docs"
+    icon="file-signature"
+    href="/docs/quickstart"
+  >
+    Generate clear, reviewable PR descriptions using Gemini 2.0 Flash to analyze code diffs.
+  </Card>
+</CardGroup>

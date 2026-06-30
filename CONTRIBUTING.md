@@ -105,12 +105,19 @@ Recon/
 
 1. **Check Existing Issues**: Search for open issues or create a new one to discuss the bug fix or feature you'd like to implement.
 2. **Create a Feature Branch**:
+   We use the `feature/` and `fix/` branching strategy. Please name your branches appropriately:
    ```bash
    git checkout -b feature/your-awesome-feature
+   # or
+   git checkout -b fix/issue-description
    ```
-3. **Commit Your Changes**: Follow clear, concise commit messages.
+3. **Commit Your Changes**: 
+   We strictly follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages. This helps us automate changelogs and versioning.
+   Example:
    ```bash
    git commit -m "feat: implement early conflict warning system in playground"
+   # or
+   git commit -m "fix: resolve rendering issue in conflict viewer"
    ```
 4. **Validate Your Code**:
    Before submitting your PR, ensure that the codebase builds correctly and passes the linter:
