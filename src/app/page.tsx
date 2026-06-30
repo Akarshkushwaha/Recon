@@ -5,7 +5,8 @@ import {
   ArrowRight, Activity, Shield, Zap, Cpu, Code2, GitMerge, 
   GitBranch, Sparkles, ChevronRight, Check, Star, Users, 
   Clock, TrendingUp, LayoutDashboard, FolderGit2, Github,
-  Settings, Search, Bell, AlertCircle, Rocket, Server
+  Settings, Search, Bell, AlertCircle, Rocket, Server,
+  AlertTriangle, Calendar, FileText, BarChart2, Filter
 } from "lucide-react";
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
 
@@ -207,31 +208,181 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Dashboard preview card - Real Snapshot */}
-        <div className="relative max-w-5xl mx-auto mt-20 animate-fade-up animate-delay-500 z-20">
+        {/* Dashboard preview card - Custom Mockup */}
+        <div className="relative max-w-6xl mx-auto mt-20 animate-fade-up animate-delay-500 z-20">
           <div className="absolute -inset-1 bg-gradient-to-br from-violet-200 via-white to-fuchsia-200 rounded-[2rem] blur-xl opacity-70" />
-          <div className="relative rounded-[1.5rem] border border-gray-200/60 bg-white/70 shadow-2xl overflow-hidden backdrop-blur-xl">
-            {/* Toolbar */}
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 bg-white/50">
-              <div className="flex gap-2">
-                <div className="w-3 h-3 rounded-full bg-gray-300" />
-                <div className="w-3 h-3 rounded-full bg-gray-300" />
-                <div className="w-3 h-3 rounded-full bg-gray-300" />
+          <div className="relative rounded-[1.5rem] border border-gray-200/60 bg-white shadow-2xl overflow-hidden flex h-[600px]">
+            
+            {/* Sidebar Mockup */}
+            <div className="w-64 border-r border-gray-100 bg-white flex flex-col hidden md:flex shrink-0">
+              <div className="px-5 py-5 border-b border-gray-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center shadow-md shadow-violet-600/30">
+                    <Activity size={15} className="text-white" />
+                  </div>
+                  <span className="font-bold text-base text-gray-900 tracking-tight">Recon</span>
+                </div>
               </div>
-              <div className="flex-1 mx-4 flex justify-center">
-                <div className="h-7 w-64 bg-gray-100/80 rounded-lg flex items-center justify-center">
-                  <span className="text-[11px] text-gray-500 font-medium">recon.dev/dashboard</span>
+              <div className="px-5 py-3 border-b border-gray-100">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-100">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  <span className="text-[11px] font-semibold text-green-600">Live Stream Active</span>
+                </div>
+              </div>
+              <div className="flex-1 px-3 py-4 space-y-0.5 overflow-hidden">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mb-2">Workspace</p>
+                
+                <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-violet-50 text-violet-700 font-medium text-sm border border-violet-100/50">
+                  <LayoutDashboard size={16} />
+                  <span className="flex-1">Activity Feed</span>
+                  <ChevronRight size={14} className="opacity-60" />
+                </div>
+                {[
+                  { icon: Users, label: "Team Radar" },
+                  { icon: GitBranch, label: "Active Branches" },
+                  { icon: AlertTriangle, label: "Merge Conflicts" },
+                  { icon: Calendar, label: "Team Standups" },
+                  { icon: FileText, label: "Changelogs" },
+                  { icon: BarChart2, label: "Analytics" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-500 font-medium text-sm">
+                    <item.icon size={16} />
+                    <span>{item.label}</span>
+                  </div>
+                ))}
+                
+                <div className="my-4 border-t border-gray-100 mx-3" />
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mb-2">Configuration</p>
+                <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-500 font-medium text-sm">
+                  <Settings size={16} />
+                  <span>Settings</span>
+                </div>
+              </div>
+              
+              <div className="p-3 border-t border-gray-100 bg-white">
+                <div className="flex items-center gap-3 p-2 rounded-xl">
+                  <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+                    <span className="text-violet-700 font-bold text-xs">A</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">Akarsh</p>
+                    <p className="text-[10px] text-gray-500 truncate">akarshkushwaha593@gmail.com</p>
+                  </div>
                 </div>
               </div>
             </div>
-            
-            {/* Real Dashboard Image */}
-            <div className="bg-white">
-              <img 
-                src="/images/recon-dashboard.png" 
-                alt="Recon Dashboard" 
-                className="w-full h-auto object-cover"
-              />
+
+            {/* Main Content Mockup */}
+            <div className="flex-1 flex flex-col bg-[#FAFAFA] overflow-hidden relative">
+              
+              <div className="flex items-center justify-between px-8 py-4 border-b border-gray-100 bg-white">
+                <div className="text-sm text-gray-400">dashboard</div>
+                <Bell size={16} className="text-gray-400" />
+              </div>
+              
+              <div className="p-8 overflow-y-auto">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-8">
+                  <div>
+                    <h1 className="text-2xl font-bold tracking-tight text-gray-900 mb-1">Activity Feed</h1>
+                    <p className="text-sm text-gray-500">Real-time stream of development activity across your connected repositories.</p>
+                  </div>
+                  <div className="flex items-center gap-3 hidden lg:flex">
+                    <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 text-xs font-semibold text-gray-700 bg-white shadow-sm">
+                      <Filter size={13} className="text-gray-400"/>
+                      All Connected Repositories
+                      <span className="text-[10px] text-gray-400 ml-2">▼</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-[#0F172A] text-white px-4 py-2.5 rounded-lg text-xs font-semibold shadow-md">
+                      <Sparkles size={14} />
+                      AI Issue Drafter
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                  {[
+                    { label: "ACTIVE BRANCHES", val: "7", sub: "across all repos", icon: GitBranch, color: "from-cyan-400 to-blue-500" },
+                    { label: "CONFLICTS", val: "3", sub: "requires attention", icon: AlertTriangle, color: "from-orange-400 to-rose-500" },
+                    { label: "STREAM STATUS", val: "Live", sub: "webhooks active", icon: Activity, color: "from-teal-400 to-emerald-500" }
+                  ].map((stat, i) => (
+                    <div key={i} className="relative overflow-hidden bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                      <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${stat.color} opacity-80`} />
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">{stat.label}</p>
+                          <p className="text-3xl font-black text-gray-900 tracking-tight">{stat.val}</p>
+                          <p className="text-xs text-gray-500 mt-1">{stat.sub}</p>
+                        </div>
+                        <div className="w-10 h-10 rounded-xl border border-gray-100 flex items-center justify-center text-gray-400 shadow-sm">
+                          <stat.icon size={16} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Conflict Alerts */}
+                <div className="mb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xs font-bold text-red-500 uppercase tracking-widest flex items-center gap-2">
+                      <AlertTriangle size={14} />
+                      Conflict Alerts
+                    </h2>
+                    <span className="px-2.5 py-0.5 rounded-full bg-red-50 text-red-600 text-[10px] font-bold border border-red-100">3 active</span>
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      { b1: "feature-chat-markdown", b2: "feature-full-screen-mode", files: "1" },
+                      { b1: "refactor-chatroom-list-vue", b2: "feature-chat-markdown", files: "144" },
+                      { b1: "refactor-chatroom-list-vue", b2: "feature-full-screen-mode", files: "1" },
+                    ].map((c, i) => (
+                      <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-red-200 bg-red-50/50">
+                        <div className="flex items-center gap-4">
+                          <div className="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center text-red-500 shrink-0">
+                            <AlertTriangle size={16} />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {c.b1} <span className="text-gray-400 font-normal mx-2">↔</span> {c.b2}
+                            </p>
+                            <p className="text-[11px] text-gray-500 mt-0.5">{c.files} overlapping file{c.files !== "1" ? "s" : ""}</p>
+                          </div>
+                        </div>
+                        <div className="hidden sm:block text-xs font-medium text-gray-700 bg-white border border-gray-200 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-50">
+                          Resolve
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Recent Pushes */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Recent Pushes</h2>
+                    <span className="px-2.5 py-0.5 rounded-full bg-green-50 text-green-600 text-[10px] font-bold border border-green-100 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> Live
+                    </span>
+                  </div>
+                  <div className="p-4 rounded-xl border border-gray-200 bg-white shadow-sm flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+                        <span className="text-violet-700 font-bold text-xs">A</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-gray-900">Akarshkushwaha</span>
+                        <span className="text-[9px] font-bold text-violet-600 bg-violet-50 border border-violet-100 px-1.5 py-0.5 rounded uppercase">PUSH</span>
+                      </div>
+                    </div>
+                    <div className="text-xs text-gray-400 flex items-center gap-1">
+                      <Clock size={12}/> 11 days ago
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
         </div>
