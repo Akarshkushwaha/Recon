@@ -344,117 +344,79 @@ export default function Home() {
           <div className="text-center mb-20">
             <div className="status-badge status-warning mb-6 mx-auto w-fit bg-white">Pricing</div>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6 text-gray-900">
-              Simple pricing for<br />
-              <span className="gradient-text">modern teams.</span>
+              Free and Open Source<br />
+              <span className="gradient-text">forever.</span>
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto font-medium">
-              Start for free, upgrade when you need more power and AI integrations.
+              Recon is proudly built for the community. Access all enterprise-grade features at zero cost.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 items-center">
-            {/* Free Tier */}
-            <div className="bento-card flex flex-col p-8">
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">Hobby</h3>
-                <div className="flex items-baseline gap-1 mb-3">
-                  <span className="text-5xl font-black text-gray-900">$0</span>
-                  <span className="text-gray-500 font-medium">/mo</span>
-                </div>
-                <p className="text-sm text-gray-500 font-medium">Perfect for solo developers and side projects.</p>
-              </div>
-              <ul className="space-y-4 mb-10 flex-1">
-                <li className="flex items-center gap-3 text-[15px] text-gray-600 font-medium">
-                  <Check size={18} className="text-violet-600 shrink-0" /> 1 Repository
-                </li>
-                <li className="flex items-center gap-3 text-[15px] text-gray-600 font-medium">
-                  <Check size={18} className="text-violet-600 shrink-0" /> Live Conflict Detection
-                </li>
-                <li className="flex items-center gap-3 text-[15px] text-gray-600 font-medium">
-                  <Check size={18} className="text-violet-600 shrink-0" /> Basic Analytics
-                </li>
-              </ul>
-              <SignedOut>
-                <SignUpButton mode="modal">
-                  <button className="btn-secondary w-full py-3.5 text-base">Get Started Free</button>
-                </SignUpButton>
-              </SignedOut>
-              <SignedIn>
-                <Link href="/dashboard" className="btn-secondary w-full py-3.5 text-base text-center">Go to Dashboard</Link>
-              </SignedIn>
-            </div>
-
-            {/* Pro Tier */}
-            <div className="relative rounded-3xl overflow-hidden bg-white border-2 border-violet-500 shadow-xl shadow-violet-500/10 scale-105 z-10 p-10 flex flex-col">
+          <div className="max-w-3xl mx-auto">
+            <div className="relative rounded-3xl overflow-hidden bg-white border-2 border-violet-500 shadow-xl shadow-violet-500/10 z-10 p-10 flex flex-col">
               <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500" />
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md uppercase tracking-wider">Most Popular</span>
+                <span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md uppercase tracking-wider">Community Edition</span>
               </div>
-              <div className="mb-8 mt-4">
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">Pro</h3>
-                <div className="flex items-baseline gap-1 mb-3">
-                  <span className="text-5xl font-black text-gray-900">$19</span>
-                  <span className="text-gray-500 font-medium">/user/mo</span>
+              <div className="text-center mb-8 mt-4">
+                <div className="flex justify-center items-baseline gap-1 mb-3">
+                  <span className="text-6xl font-black text-gray-900">$0</span>
+                  <span className="text-gray-500 font-medium">/mo</span>
                 </div>
-                <p className="text-sm text-gray-500 font-medium">For engineering teams shipping fast.</p>
+                <p className="text-sm text-gray-500 font-medium">Everything you need to ship faster without conflicts.</p>
               </div>
-              <ul className="space-y-4 mb-10 flex-1">
-                <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
-                  <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
-                    <Check size={14} className="text-violet-600" />
-                  </div>
-                  Unlimited Repositories
-                </li>
-                <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
-                  <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
-                    <Check size={14} className="text-violet-600" />
-                  </div>
-                  AI Standups & PR Drafts
-                </li>
-                <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
-                  <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
-                    <Check size={14} className="text-violet-600" />
-                  </div>
-                  Slack & Discord Webhooks
-                </li>
-                <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
-                  <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
-                    <Check size={14} className="text-violet-600" />
-                  </div>
-                  Stale Branch Alerting
-                </li>
-              </ul>
+              
+              <div className="grid sm:grid-cols-2 gap-4 mb-10">
+                <ul className="space-y-4">
+                  <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
+                    <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+                      <Check size={14} className="text-violet-600" />
+                    </div>
+                    Unlimited Repositories
+                  </li>
+                  <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
+                    <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+                      <Check size={14} className="text-violet-600" />
+                    </div>
+                    Live Conflict Detection
+                  </li>
+                  <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
+                    <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+                      <Check size={14} className="text-violet-600" />
+                    </div>
+                    AI Standups & PR Drafts
+                  </li>
+                </ul>
+                <ul className="space-y-4">
+                  <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
+                    <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+                      <Check size={14} className="text-violet-600" />
+                    </div>
+                    Interactive Playground
+                  </li>
+                  <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
+                    <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+                      <Check size={14} className="text-violet-600" />
+                    </div>
+                    Slack & Discord Webhooks
+                  </li>
+                  <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
+                    <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+                      <Check size={14} className="text-violet-600" />
+                    </div>
+                    Self-Hosting Support
+                  </li>
+                </ul>
+              </div>
+
               <SignedOut>
                 <SignUpButton mode="modal">
-                  <button className="btn-primary w-full py-4 text-base">Start 14-Day Trial</button>
+                  <button className="btn-primary w-full py-4 text-base">Get Started Free</button>
                 </SignUpButton>
               </SignedOut>
               <SignedIn>
-                <button className="btn-primary w-full py-4 text-base">Upgrade to Pro</button>
+                <Link href="/dashboard" className="btn-primary w-full py-4 text-base text-center flex items-center justify-center">Open Dashboard</Link>
               </SignedIn>
-            </div>
-
-            {/* Enterprise Tier */}
-            <div className="bento-card flex flex-col p-8">
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">Enterprise</h3>
-                <div className="flex items-baseline gap-1 mb-3">
-                  <span className="text-5xl font-black text-gray-900">Custom</span>
-                </div>
-                <p className="text-sm text-gray-500 font-medium">For large organizations with strict security needs.</p>
-              </div>
-              <ul className="space-y-4 mb-10 flex-1">
-                <li className="flex items-center gap-3 text-[15px] text-gray-600 font-medium">
-                  <Check size={18} className="text-violet-600 shrink-0" /> Dedicated VPC Deployment
-                </li>
-                <li className="flex items-center gap-3 text-[15px] text-gray-600 font-medium">
-                  <Check size={18} className="text-violet-600 shrink-0" /> Single Sign-On (SAML/SSO)
-                </li>
-                <li className="flex items-center gap-3 text-[15px] text-gray-600 font-medium">
-                  <Check size={18} className="text-violet-600 shrink-0" /> Bring Your Own AI Models
-                </li>
-              </ul>
-              <button className="btn-secondary w-full py-3.5 text-base">Contact Sales</button>
             </div>
           </div>
         </div>
