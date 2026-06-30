@@ -140,75 +140,7 @@ function DeveloperCard({ dev }: { dev: any }) {
 }
 
 export default function TeamRadarPage() {
-  const repos = useQuery(api.activity.getRepos);
-  const [selectedRepoId, setSelectedRepoId] = useState<any>(null);
-
-  useEffect(() => {
-    if (repos && repos.length > 0 && !selectedRepoId) {
-      setSelectedRepoId(repos[0]._id);
-    }
-  }, [repos, selectedRepoId]);
-
-  const team = useQuery(
-    api.team.getTeamTelemetry,
-    selectedRepoId ? { repoId: selectedRepoId } : "skip"
-  );
-
-  const renderContent = () => {
-    if (repos === undefined) {
-      return (
-        <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30">
-          <div className="flex flex-col items-center gap-3">
-            <Loader2 className="animate-spin text-primary" size={32} />
-            <p className="text-sm font-medium text-muted-foreground tracking-wide">Loading repositories...</p>
-          </div>
-        </div>
-      );
-    }
-    
-    if (repos.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30 text-center px-4">
-          <Users className="text-muted-foreground/30 mb-4" size={48} />
-          <h3 className="text-lg font-bold mb-2">No Repositories Found</h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            You need to install the GitHub App on a repository first.
-          </p>
-        </div>
-      );
-    }
-    
-    if (!selectedRepoId || team === undefined) {
-      return (
-        <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30">
-          <div className="flex flex-col items-center gap-3">
-            <Loader2 className="animate-spin text-primary" size={32} />
-            <p className="text-sm font-medium text-muted-foreground tracking-wide">Syncing team telemetry...</p>
-          </div>
-        </div>
-      );
-    }
-    
-    if (team.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30 text-center px-4">
-          <Users className="text-muted-foreground/30 mb-4" size={48} />
-          <h3 className="text-lg font-bold mb-2">No Team Activity Detected</h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            Push some code or open a pull request in this repository to see live telemetry.
-          </p>
-        </div>
-      );
-    }
-    
-    return (
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {team.map((dev: any) => (
-          <DeveloperCard key={dev.authorLogin} dev={dev} />
-        ))}
-      </div>
-    );
-  };
+  const team = useQuery(api.team.getTeamTelemetry);
 
   return (
     <DashboardLayout>
@@ -222,25 +154,28 @@ export default function TeamRadarPage() {
         </p>
       </div>
 
-      {repos && repos.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-8">
-          {repos.map((repo: any) => (
-            <button
-              key={repo._id}
-              onClick={() => setSelectedRepoId(repo._id)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                selectedRepoId === repo._id
-                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                  : "bg-secondary/50 text-foreground hover:bg-secondary border border-border"
-              }`}
-            >
-              {repo.fullName}
-            </button>
+      {!team ? (
+        <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="animate-spin text-primary" size={32} />
+            <p className="text-sm font-medium text-muted-foreground tracking-wide">Syncing team telemetry...</p>
+          </div>
+        </div>
+      ) : team.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30 text-center px-4">
+          <Users className="text-muted-foreground/30 mb-4" size={48} />
+          <h3 className="text-lg font-bold mb-2">No Team Activity Detected</h3>
+          <p className="text-sm text-muted-foreground max-w-sm">
+            Push some code or open a pull request to see your team's live telemetry dashboard.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {team.map((dev: any) => (
+            <DeveloperCard key={dev.authorLogin} dev={dev} />
           ))}
         </div>
       )}
-
-      {renderContent()}
     </DashboardLayout>
   );
 }
