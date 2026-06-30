@@ -353,8 +353,8 @@ export default function Home() {
           </div>
 
           <div className="max-w-3xl mx-auto">
-            <div className="relative rounded-3xl overflow-hidden bg-white border-2 border-violet-500 shadow-xl shadow-violet-500/10 z-10 p-10 flex flex-col">
-              <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500" />
+            <div className="relative rounded-3xl bg-white border-2 border-violet-500 shadow-xl shadow-violet-500/10 z-10 p-10 flex flex-col">
+              <div className="absolute top-0 inset-x-0 h-2 rounded-t-[1.35rem] bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500" />
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                 <span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md uppercase tracking-wider">Community Edition</span>
               </div>
@@ -363,7 +363,12 @@ export default function Home() {
                   <span className="text-6xl font-black text-gray-900">$0</span>
                   <span className="text-gray-500 font-medium">/mo</span>
                 </div>
-                <p className="text-sm text-gray-500 font-medium">Everything you need to ship faster without conflicts.</p>
+                <p className="text-sm text-gray-500 font-medium mb-8">Everything you need to ship faster without conflicts.</p>
+                
+                {/* Dashboard Snapshot */}
+                <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-md">
+                  <img src="/images/dashboard-skeleton.png" alt="Recon Dashboard" className="w-full h-auto object-cover" />
+                </div>
               </div>
               
               <div className="grid sm:grid-cols-2 gap-4 mb-10">
