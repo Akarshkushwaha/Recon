@@ -135,7 +135,19 @@ function DeveloperCard({ dev }: { dev: any }) {
 }
 
 export default function TeamRadarPage() {
-  const team = useQuery(api.team.getTeamTelemetry);
+  const repos = useQuery(api.activity.getRepos);
+  const [selectedRepoId, setSelectedRepoId] = useState<any>(null);
+
+  useEffect(() => {
+    if (repos && repos.length > 0 && !selectedRepoId) {
+      setSelectedRepoId(repos[0]._id);
+    }
+  }, [repos, selectedRepoId]);
+
+  const team = useQuery(
+    api.team.getTeamTelemetry,
+    selectedRepoId ? { repoId: selectedRepoId } : "skip"
+  );
 
   return (
     <DashboardLayout>
@@ -149,19 +161,45 @@ export default function TeamRadarPage() {
         </p>
       </div>
 
-      {!team ? (
+      {repos && repos.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-8">
+          {repos.map((repo: any) => (
+            <button
+              key={repo._id}
+              onClick={() => setSelectedRepoId(repo._id)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                selectedRepoId === repo._id
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                  : "bg-secondary/50 text-foreground hover:bg-secondary border border-border"
+              }`}
+            >
+              {repo.fullName}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {!repos || !team ? (
         <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30">
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="animate-spin text-primary" size={32} />
             <p className="text-sm font-medium text-muted-foreground tracking-wide">Syncing team telemetry...</p>
           </div>
         </div>
+      ) : repos.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30 text-center px-4">
+          <Users className="text-muted-foreground/30 mb-4" size={48} />
+          <h3 className="text-lg font-bold mb-2">No Repositories Found</h3>
+          <p className="text-sm text-muted-foreground max-w-sm">
+            You need to install the GitHub App on a repository first.
+          </p>
+        </div>
       ) : team.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-2xl bg-card/30 text-center px-4">
           <Users className="text-muted-foreground/30 mb-4" size={48} />
           <h3 className="text-lg font-bold mb-2">No Team Activity Detected</h3>
           <p className="text-sm text-muted-foreground max-w-sm">
-            Push some code or open a pull request to see your team's live telemetry dashboard.
+            Push some code or open a pull request in this repository to see live telemetry.
           </p>
         </div>
       ) : (

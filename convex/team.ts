@@ -2,15 +2,38 @@ import { action, query } from "./_generated/server";
 import { v } from "convex/values";
 import { Groq } from "groq-sdk";
 import { api } from "./_generated/api";
+import { isRepoOwner } from "./authHelpers";
 
 export const getTeamTelemetry = query({
-  args: {},
-  handler: async (ctx) => {
-    // 1. Fetch all commits, branchActivity, PRs, and issues
-    const commits = await ctx.db.query("commits").order("desc").take(100);
-    const branchActivity = await ctx.db.query("branchActivity").collect();
-    const pullRequests = await ctx.db.query("pullRequests").order("desc").take(50);
-    const issues = await ctx.db.query("issues").order("desc").take(50);
+  args: { repoId: v.id("repos") },
+  handler: async (ctx, args) => {
+    if (!(await isRepoOwner(ctx, args.repoId))) {
+      return [];
+    }
+
+    // 1. Fetch all commits, branchActivity, PRs, and issues for the selected repo
+    const commits = await ctx.db
+      .query("commits")
+      .withIndex("by_repo", (q) => q.eq("repoId", args.repoId))
+      .order("desc")
+      .take(100);
+      
+    const branchActivity = await ctx.db
+      .query("branchActivity")
+      .withIndex("by_repo_and_branch", (q) => q.eq("repoId", args.repoId))
+      .collect();
+      
+    const pullRequests = await ctx.db
+      .query("pullRequests")
+      .withIndex("by_repo_and_pr", (q) => q.eq("repoId", args.repoId))
+      .order("desc")
+      .take(50);
+      
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_repo", (q) => q.eq("repoId", args.repoId))
+      .order("desc")
+      .take(50);
 
     // 2. Group by developer (authorLogin)
     const team: Record<string, any> = {};

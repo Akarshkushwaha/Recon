@@ -1,38 +1,75 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
+
+async function getUserRepoIds(ctx: QueryCtx | MutationCtx) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) return [];
+
+  const installations = await ctx.db
+    .query("installations")
+    .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
+    .collect();
+
+  if (installations.length === 0) return [];
+
+  const repoIds: Id<"repos">[] = [];
+  for (const inst of installations) {
+    const instRepos = await ctx.db
+      .query("repos")
+      .filter((q) => q.eq(q.field("installationId"), inst._id))
+      .collect();
+    repoIds.push(...instRepos.map((r) => r._id));
+  }
+  return repoIds;
+}
 
 export const getLatestActivity = query({
   args: {},
   handler: async (ctx) => {
-    // Fetch latest branch activity across all repos
+    const repoIds = await getUserRepoIds(ctx);
+    if (repoIds.length === 0) return [];
+
+    // Fetch latest branch activity across user's repos
     const activity = await ctx.db
       .query("branchActivity")
       .order("desc")
-      .take(20);
+      .collect();
 
-    return activity;
+    // In-memory filter and slice because Convex doesn't support IN queries or joins well yet
+    return activity
+      .filter((a) => repoIds.includes(a.repoId))
+      .slice(0, 20);
   },
 });
 
 export const getActiveConflicts = query({
   args: {},
   handler: async (ctx) => {
+    const repoIds = await getUserRepoIds(ctx);
+    if (repoIds.length === 0) return [];
+
     // Fetch unresolved and undismissed conflicts
-    return await ctx.db
+    const conflicts = await ctx.db
       .query("conflicts")
       .withIndex("by_repo")
       .filter((q) => q.eq(q.field("dismissed"), false))
       .collect();
+
+    return conflicts.filter((c) => repoIds.includes(c.repoId));
   },
 });
 
 export const getRepoByGithubId = query({
   args: { githubRepoId: v.number() },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const repoIds = await getUserRepoIds(ctx);
+    const repo = await ctx.db
       .query("repos")
       .withIndex("by_repo_id", (q) => q.eq("githubRepoId", args.githubRepoId))
       .unique();
+    if (!repo || !repoIds.includes(repo._id)) return null;
+    return repo;
   },
 });
 
@@ -112,9 +149,14 @@ export const sendReviewReminders = mutation({
 export const getRepos = query({
   args: {},
   handler: async (ctx) => {
+    const repoIds = await getUserRepoIds(ctx);
+    if (repoIds.length === 0) return [];
+
     const repos = await ctx.db.query("repos").collect();
+    const userRepos = repos.filter((r) => repoIds.includes(r._id));
+
     const reposWithInstallId = await Promise.all(
-      repos.map(async (repo) => {
+      userRepos.map(async (repo) => {
         const installation = await ctx.db.get(repo.installationId);
         return {
           ...repo,
@@ -129,10 +171,15 @@ export const getRepos = query({
 export const getRecentActivity = query({
   args: { since: v.number() },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const repoIds = await getUserRepoIds(ctx);
+    if (repoIds.length === 0) return [];
+
+    const activity = await ctx.db
       .query("branchActivity")
       .filter((q) => q.gt(q.field("lastPushTimestamp"), args.since))
       .collect();
+      
+    return activity.filter((a) => repoIds.includes(a.repoId));
   },
 });
 
@@ -175,6 +222,12 @@ export const saveStandup = mutation({
 export const getStandups = query({
   args: {},
   handler: async (ctx) => {
+    // Note: If you want to filter standups by team members in the user's repos, 
+    // you would need more complex logic. For now, we can leave standups global 
+    // or return none if not authenticated.
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+
     return await ctx.db
       .query("standups")
       .order("desc")

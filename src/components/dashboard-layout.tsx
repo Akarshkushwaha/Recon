@@ -6,8 +6,10 @@ import {
   Activity, GitBranch, AlertTriangle, Settings, Calendar,
   LayoutDashboard, FileText, Bell, ChevronRight, BarChart2, Sparkles, Users
 } from "lucide-react";
-import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
+import { Authenticated, Unauthenticated, AuthLoading, useMutation } from "convex/react";
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
+import { useEffect } from "react";
+import { api } from "../../convex/_generated/api";
 
 const NAV = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Activity Feed" },
@@ -37,6 +39,20 @@ function NavItem({ href, icon: Icon, label }: { href: string; icon: any; label: 
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
+  const claimInstallation = useMutation(api.settings.claimInstallation);
+
+  useEffect(() => {
+    if (user) {
+      const githubAccounts = user.externalAccounts
+        .filter(a => a.provider.includes("github"))
+        .map(a => a.username)
+        .filter(Boolean) as string[];
+        
+      if (githubAccounts.length > 0) {
+        claimInstallation({ githubUsernames: githubAccounts }).catch(console.error);
+      }
+    }
+  }, [user, claimInstallation]);
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">

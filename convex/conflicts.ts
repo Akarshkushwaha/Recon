@@ -1,8 +1,18 @@
-import { action, mutation, query } from "./_generated/server";
+import { action, mutation, query, QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { api } from "./_generated/api";
-import { Doc } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 import { App } from "@octokit/app";
+
+async function isRepoOwner(ctx: QueryCtx | MutationCtx, repoId: Id<"repos">) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) return false;
+  const repo = await ctx.db.get(repoId);
+  if (!repo) return false;
+  const installation = await ctx.db.get(repo.installationId);
+  if (!installation) return false;
+  return installation.userId === identity.subject;
+}
 
 export const detectConflicts = action({
   args: {
@@ -106,6 +116,11 @@ export const saveConflict = mutation({
 export const dismissConflict = mutation({
   args: { conflictId: v.id("conflicts") },
   handler: async (ctx, args) => {
+    const conflict = await ctx.db.get(args.conflictId);
+    if (!conflict) return;
+    if (!(await isRepoOwner(ctx, conflict.repoId))) {
+      throw new Error("Unauthorized");
+    }
     await ctx.db.patch(args.conflictId, {
       dismissed: true,
       resolvedAt: Date.now(),
@@ -118,6 +133,9 @@ export const getConflict = query({
   handler: async (ctx, args) => {
     const conflict = await ctx.db.get(args.conflictId);
     if (!conflict) return null;
+    if (!(await isRepoOwner(ctx, conflict.repoId))) {
+      return null;
+    }
     const repo = await ctx.db.get(conflict.repoId);
     return {
       ...conflict,
@@ -131,6 +149,9 @@ export const getConflictRepoInfo = query({
   handler: async (ctx, args) => {
     const conflict = await ctx.db.get(args.conflictId);
     if (!conflict) return null;
+    if (!(await isRepoOwner(ctx, conflict.repoId))) {
+      return null;
+    }
     const repo = await ctx.db.get(conflict.repoId);
     if (!repo) return null;
     const installation = await ctx.db.get(repo.installationId);

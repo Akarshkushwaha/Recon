@@ -7,7 +7,9 @@ export default defineSchema({
     accountLogin: v.string(),
     accountType: v.string(), // "User" or "Organization"
     avatarUrl: v.string(),
-  }).index("by_install_id", ["githubInstallId"]),
+    userId: v.optional(v.string()), // The Clerk user ID of the owner
+  }).index("by_install_id", ["githubInstallId"])
+    .index("by_user_id", ["userId"]),
 
   repos: defineTable({
     installationId: v.id("installations"),

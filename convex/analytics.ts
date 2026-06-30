@@ -1,5 +1,6 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
+import { getUserRepoIds } from "./authHelpers";
 
 // ────────────────────────────────────────────────────
 // 1. Contributor Heatmap
@@ -10,6 +11,9 @@ export const getContributorHeatmap = query({
     repoId: v.optional(v.id("repos")),
   },
   handler: async (ctx, args) => {
+    const repoIds = await getUserRepoIds(ctx);
+    if (repoIds.length === 0) return { grid: Array.from({ length: 7 }, () => Array(24).fill(0)), authorMap: {}, totalPushes: 0 };
+    
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     let activity;
 
@@ -28,6 +32,7 @@ export const getContributorHeatmap = query({
         .query("branchActivity")
         .filter((q) => q.gt(q.field("lastPushTimestamp"), thirtyDaysAgo))
         .collect();
+      activity = activity.filter((a) => repoIds.includes(a.repoId));
     }
 
     // Build a 7×24 grid: cells[day][hour] = count
@@ -60,6 +65,9 @@ export const getReviewVelocity = query({
     repoId: v.optional(v.id("repos")),
   },
   handler: async (ctx, args) => {
+    const repoIds = await getUserRepoIds(ctx);
+    if (repoIds.length === 0) return { totalPRs: 0, mergedCount: 0, openCount: 0, closedCount: 0, avgMergeHours: 0, authorVelocity: {} };
+
     const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
     let prs;
 
@@ -74,6 +82,7 @@ export const getReviewVelocity = query({
         .query("pullRequests")
         .filter((q) => q.gt(q.field("openedAt"), ninetyDaysAgo))
         .collect();
+      prs = prs.filter((pr) => repoIds.includes(pr.repoId));
     }
 
     const merged = prs.filter((pr) => pr.state === "merged" && pr.closedAt);
@@ -130,6 +139,9 @@ export const getLeaderboard = query({
     repoId: v.optional(v.id("repos")),
   },
   handler: async (ctx, args) => {
+    const repoIds = await getUserRepoIds(ctx);
+    if (repoIds.length === 0) return { weekly: [], monthly: [] };
+
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     let weeklyActivity;
@@ -160,11 +172,13 @@ export const getLeaderboard = query({
         .query("branchActivity")
         .filter((q) => q.gt(q.field("lastPushTimestamp"), sevenDaysAgo))
         .collect();
+      weeklyActivity = weeklyActivity.filter((a) => repoIds.includes(a.repoId));
 
       monthlyActivity = await ctx.db
         .query("branchActivity")
         .filter((q) => q.gt(q.field("lastPushTimestamp"), thirtyDaysAgo))
         .collect();
+      monthlyActivity = monthlyActivity.filter((a) => repoIds.includes(a.repoId));
     }
 
     // Build weekly stats per author
