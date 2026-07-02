@@ -24,7 +24,6 @@ Unlike traditional AI assistants that treat every pull request like a stateless 
 - [⚡ Why Recon?](#-why-recon)
 - [🧠 The Cognee Memory Engine](#-the-cognee-memory-engine)
 - [🚀 Key Features](#-key-features)
-- [🏆 Hackathon & Judging Criteria Highlights](#-hackathon--judging-criteria-highlights)
 - [🛠️ Tech Stack](#️-tech-stack)
 - [⚙️ Setup & Installation](#️-setup--installation)
 - [🤖 GitHub App Configuration](#-github-app-configuration)
@@ -84,19 +83,6 @@ Stop spending hours compiling daily updates. Recon aggregates cross-branch commi
 
 ### 🎯 AI Issue Drafter
 Describe a bug or feature idea in plain English. Recon structures it into a polished, markdown-formatted GitHub Issue complete with title, label recommendations, complexity estimates, and implementation checklists, ready to copy to your clipboard.
-
----
-
-## 🏆 Hackathon & Judging Criteria Highlights
-
-| Judging Criterion | How Recon Excels |
-| :--- | :--- |
-| **01. Potential Impact** | Solves the universal engineering bottleneck of branch conflicts and lost context. Transforms stateless AI into an institutional team memory bank that prevents CI failures and saves hours of documentation time. |
-| **02. Creativity & Innovation** | Pioneers an "air traffic control" coordination layer for Git repositories. Innovates with self-learning PR descriptions via edit-distance feedback and post-mortem incident risk scoring for files. |
-| **03. Technical Excellence** | Built on a modern, responsive stack (Next.js 15, React 19, Convex real-time DB, Clerk Auth). Decoupled Python FastAPI cognitive microservice with robust fallback modes between cloud and local self-hosted memory. |
-| **04. Best Use of Cognee** | Deep integration implementing the complete **4-part Cognee lifecycle API** (`remember`, `recall`, `improve`, `forget`) over a hybrid graph-vector store (Kuzu + LanceDB + SQLite). |
-| **05. User Experience** | Premium dark-mode aesthetic with vibrant gradients, micro-animations, real-time activity streams, and an intuitive **Interactive Memory Simulator** that makes AI learning visual and understandable. |
-| **06. Presentation Quality** | Thorough documentation, live deployed application on Vercel, automated demo datasets, and interactive simulators designed for instant, zero-friction evaluation. |
 
 ---
 
