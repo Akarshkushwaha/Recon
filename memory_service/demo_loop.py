@@ -1,6 +1,8 @@
 import asyncio
 import time
 import sys
+import cognee
+from .config import COGNEE_API_URL, COGNEE_API_KEY
 
 # Ensure UTF-8 output on Windows terminal
 try:
@@ -36,6 +38,16 @@ def print_box(title: str, content: str, color: str = CYAN):
     print(f"{color}+" + "-" * max_len + f"+{RESET}\n")
 
 async def run_hackathon_demo():
+    if COGNEE_API_KEY and COGNEE_API_URL:
+        print(f"{GREEN}[INFO] Connecting Cognee to Cloud Tenant: {COGNEE_API_URL}...{RESET}")
+        try:
+            await cognee.serve(url=COGNEE_API_URL, api_key=COGNEE_API_KEY)
+            print(f"{GREEN}[OK] Connected to Cognee Cloud successfully!{RESET}\n")
+        except Exception as e:
+            print(f"{YELLOW}[WARN] Cloud connection failed: {e}. Falling back to local store.{RESET}\n")
+    else:
+        print(f"{YELLOW}[INFO] Running in self-hosted local mode (No Cognee Cloud credentials).{RESET}\n")
+
     print(f"\n{BOLD}{MAGENTA}========================================================================{RESET}")
     print(f"{BOLD}{MAGENTA}     THE HACKATHON DEMO: RECON + COGNEE SELF-IMPROVING MEMORY           {RESET}")
     print(f"{BOLD}{MAGENTA}     'The PR intelligence layer that gets smarter with every merge'       {RESET}")
@@ -158,6 +170,10 @@ async def run_hackathon_demo():
         CYAN
     )
     print(f"{BOLD}{GREEN}[OK - Demo completed successfully. Ready for submission video recording!]{RESET}\n")
+    try:
+        await cognee.disconnect()
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     asyncio.run(run_hackathon_demo())

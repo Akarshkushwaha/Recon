@@ -1,8 +1,11 @@
 import logging
 from typing import List, Optional, Dict, Any
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+import cognee
+from .config import COGNEE_API_URL, COGNEE_API_KEY
 
 from .engine import (
     on_pr_opened,
@@ -17,10 +20,30 @@ from .engine import (
 
 logger = logging.getLogger("recon_memory.api")
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Connect to Cognee Cloud if API credentials are provided
+    if COGNEE_API_KEY and COGNEE_API_URL:
+        logger.info(f"Connecting Cognee to cloud tenant URL: {COGNEE_API_URL}")
+        try:
+            await cognee.serve(url=COGNEE_API_URL, api_key=COGNEE_API_KEY)
+            logger.info("Successfully connected Cognee to Cognee Cloud!")
+        except Exception as e:
+            logger.error(f"Failed to connect Cognee to cloud, falling back to local self-hosted: {e}")
+    else:
+        logger.info("No Cognee Cloud credentials found. Running in self-hosted local mode.")
+    yield
+    # Shutdown
+    try:
+        await cognee.disconnect()
+    except Exception:
+        pass
+
 app = FastAPI(
     title="Recon Memory Service",
     description="The PR intelligence layer that gets smarter with every merge — powered by Cognee Hybrid Graph-Vector Engine.",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Allow CORS for Next.js frontend / Convex integrations
