@@ -40,3 +40,11 @@ implementation_plan.md
 task.md
 walkthrough.md
 .agents/
+
+# Python & Cognee Memory
+__pycache__/
+*.pyc
+*.pyo
+cognee_data/
+.cognee_system/
+
