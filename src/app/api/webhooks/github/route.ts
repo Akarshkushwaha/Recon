@@ -110,6 +110,18 @@ export async function POST(req: Request) {
         repoFullName: event.repository.full_name,
         prNumber: event.pull_request.number,
       });
+
+      // 4. Check if PR links to an issue (e.g. #123 or fixes #123)
+      const prText = `${event.pull_request.title} ${event.pull_request.body || ""}`;
+      const issueMatch = prText.match(/#(\d+)/);
+      if (issueMatch) {
+        const issueNum = parseInt(issueMatch[1], 10);
+        await convex.mutation(api.webhooks.linkPRToIssue, {
+          repoId: repo._id,
+          prNumber: event.pull_request.number,
+          issueNumber: issueNum,
+        });
+      }
     }
   }
 
@@ -126,6 +138,21 @@ export async function POST(req: Request) {
         state: event.issue.state,
         assignee: event.issue.assignee?.login,
         url: event.issue.html_url,
+      });
+    }
+  }
+
+  if (eventName === "issue_comment" && ["created", "edited"].includes(event.action)) {
+    const repo = await convex.query(api.activity.getRepoByGithubId, {
+      githubRepoId: event.repository.id,
+    });
+
+    if (repo) {
+      await convex.mutation(api.webhooks.handleIssueComment, {
+        repoId: repo._id,
+        issueNumber: event.issue.number,
+        commenter: event.comment.user.login,
+        body: event.comment.body || "",
       });
     }
   }

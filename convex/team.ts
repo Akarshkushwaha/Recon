@@ -5,11 +5,15 @@ import { api } from "./_generated/api";
 import { getUserRepoIds } from "./authHelpers";
 
 export const getTeamTelemetry = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { repoId: v.optional(v.id("repos")) },
+  handler: async (ctx, args) => {
     // SECURITY FIX: Only fetch telemetry for repositories the user owns/has access to!
-    const repoIds = await getUserRepoIds(ctx);
+    let repoIds = await getUserRepoIds(ctx);
     if (repoIds.length === 0) return [];
+    if (args.repoId) {
+      if (!repoIds.includes(args.repoId)) return [];
+      repoIds = [args.repoId];
+    }
 
     let commits: any[] = [];
     let branchActivity: any[] = [];

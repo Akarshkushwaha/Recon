@@ -24,4 +24,12 @@ crons.cron(
   api.activity.sendReviewReminders
 );
 
+// 4. Continuous GitHub Repo Sync - Every hour
+crons.cron(
+  "continuous-github-sync",
+  "0 * * * *",
+  api.githubSync.syncAllRepos
+);
+
 export default crons;
+

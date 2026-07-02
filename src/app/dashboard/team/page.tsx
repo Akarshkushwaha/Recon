@@ -6,6 +6,7 @@ import { useQuery, useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Users, GitCommit, GitPullRequest, CircleDot, BrainCircuit, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { RepoSelector } from "@/components/repo-selector";
 
 function DeveloperCard({ dev }: { dev: any }) {
   const inferFeatureWork = useAction(api.team.inferFeatureWork);
@@ -140,18 +141,22 @@ function DeveloperCard({ dev }: { dev: any }) {
 }
 
 export default function TeamRadarPage() {
-  const team = useQuery(api.team.getTeamTelemetry);
+  const [selectedRepoId, setSelectedRepoId] = useState<any>(undefined);
+  const team = useQuery(api.team.getTeamTelemetry, { repoId: selectedRepoId });
 
   return (
     <DashboardLayout>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight mb-1 flex items-center gap-2">
-          <Users className="text-primary" size={24} />
-          Team Radar
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Real-time telemetry on what everyone is building right now.
-        </p>
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight mb-1 flex items-center gap-2">
+            <Users className="text-primary" size={24} />
+            Team Radar
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Real-time telemetry on what everyone is building right now.
+          </p>
+        </div>
+        <RepoSelector selectedRepoId={selectedRepoId} onSelectRepo={setSelectedRepoId} />
       </div>
 
       {!team ? (

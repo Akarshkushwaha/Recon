@@ -1,5 +1,6 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { api } from "./_generated/api";
 
 export const handlePush = mutation({
   args: {
@@ -138,11 +139,16 @@ export const handleRepoAdded = mutation({
             .unique();
 
         if (!existingRepo) {
-            await ctx.db.insert("repos", {
+            const newRepoId = await ctx.db.insert("repos", {
                 installationId: installation._id,
                 githubRepoId: args.repoId,
                 name: args.name,
                 fullName: args.fullName,
+            });
+            await ctx.scheduler.runAfter(0, api.githubSync.syncRepoData, {
+                installId: args.installId,
+                repoId: newRepoId,
+                repoFullName: args.fullName,
             });
         }
     }
@@ -214,4 +220,87 @@ export const markPRDescriptionGenerated = mutation({
 });
 
 
-export const handleIssue = mutation({ args: { repoId: v.id("repos"), issueNumber: v.number(), title: v.string(), state: v.string(), assignee: v.optional(v.string()), url: v.string() }, handler: async (ctx, args) => { const existing = await ctx.db.query("issues").withIndex("by_repo_and_issue", q => q.eq("repoId", args.repoId).eq("issueNumber", args.issueNumber)).unique(); if (existing) { await ctx.db.patch(existing._id, { title: args.title, state: args.state, assignee: args.assignee, updatedAt: Date.now() }); } else { await ctx.db.insert("issues", { repoId: args.repoId, issueNumber: args.issueNumber, title: args.title, state: args.state, assignee: args.assignee, url: args.url, updatedAt: Date.now() }); } } });
+export const handleIssue = mutation({
+  args: {
+    repoId: v.id("repos"),
+    issueNumber: v.number(),
+    title: v.string(),
+    state: v.string(),
+    assignee: v.optional(v.string()),
+    url: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("issues")
+      .withIndex("by_repo_and_issue", (q) =>
+        q.eq("repoId", args.repoId).eq("issueNumber", args.issueNumber)
+      )
+      .unique();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        title: args.title,
+        state: args.state,
+        assignee: args.assignee,
+        updatedAt: Date.now(),
+      });
+    } else {
+      await ctx.db.insert("issues", {
+        repoId: args.repoId,
+        issueNumber: args.issueNumber,
+        title: args.title,
+        state: args.state,
+        assignee: args.assignee,
+        url: args.url,
+        updatedAt: Date.now(),
+      });
+    }
+  },
+});
+
+export const handleIssueComment = mutation({
+  args: {
+    repoId: v.id("repos"),
+    issueNumber: v.number(),
+    commenter: v.string(),
+    body: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("issues")
+      .withIndex("by_repo_and_issue", (q) =>
+        q.eq("repoId", args.repoId).eq("issueNumber", args.issueNumber)
+      )
+      .unique();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        updatedAt: Date.now(),
+      });
+    }
+  },
+});
+
+export const linkPRToIssue = mutation({
+  args: {
+    repoId: v.id("repos"),
+    prNumber: v.number(),
+    issueNumber: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const pr = await ctx.db
+      .query("pullRequests")
+      .withIndex("by_repo_and_pr", (q) =>
+        q.eq("repoId", args.repoId).eq("prNumber", args.prNumber)
+      )
+      .unique();
+
+    if (pr) {
+      await ctx.db.patch(pr._id, {
+        linkedIssue: args.issueNumber,
+        updatedAt: Date.now(),
+      });
+    }
+  },
+});
+

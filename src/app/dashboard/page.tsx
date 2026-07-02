@@ -30,10 +30,10 @@ function StatCard({ label, value, sub, icon: Icon, colorClass }: { label: string
 
 export default function DashboardPage() {
   const router = useRouter();
-  const activity = useQuery(api.activity.getLatestActivity);
-  const conflicts = useQuery(api.activity.getActiveConflicts);
-  const repos = useQuery(api.activity.getRepos);
   const [selectedRepoId, setSelectedRepoId] = useState<string>("all");
+  const activity = useQuery(api.activity.getLatestActivity, selectedRepoId === "all" ? {} : { repoId: selectedRepoId as any });
+  const conflicts = useQuery(api.activity.getActiveConflicts, selectedRepoId === "all" ? {} : { repoId: selectedRepoId as any });
+  const repos = useQuery(api.activity.getRepos);
   const [isIssueOpen, setIsIssueOpen] = useState(false);
 
   const filteredActivity = selectedRepoId === "all"

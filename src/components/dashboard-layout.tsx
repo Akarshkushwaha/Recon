@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   Activity, GitBranch, AlertTriangle, Settings, Calendar,
-  LayoutDashboard, FileText, Bell, ChevronRight, BarChart2, Sparkles, Users, BrainCircuit
+  LayoutDashboard, FileText, Bell, ChevronRight, BarChart2, Sparkles, Users, BrainCircuit, RefreshCw
 } from "lucide-react";
-import { Authenticated, Unauthenticated, AuthLoading, useMutation } from "convex/react";
+import { Authenticated, Unauthenticated, AuthLoading, useMutation, useAction } from "convex/react";
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 
 const NAV = [
@@ -41,6 +41,19 @@ function NavItem({ href, icon: Icon, label }: { href: string; icon: any; label: 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const claimInstallation = useMutation(api.settings.claimInstallation);
+  const syncAllRepos = useAction(api.githubSync.syncAllRepos);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+      await syncAllRepos();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -58,30 +71,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       {/* Sidebar */}
-      <aside className="w-64 border-r bg-card/60 backdrop-blur-xl flex flex-col sticky top-0 h-screen shrink-0">
-        {/* Logo */}
-        <div className="px-5 py-5 border-b">
-          <Link href="/" className="flex items-center gap-2.5 group w-fit">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-md shadow-primary/30 group-hover:scale-105 transition-transform">
-              <Activity size={15} className="text-primary-foreground" />
-            </div>
-            <span className="font-bold text-base tracking-tight">Recon</span>
-          </Link>
-        </div>
-
-        {/* Live indicator */}
-        <div className="px-5 py-3 border-b">
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-500/5 border border-green-500/15">
-            <span className="pulse-dot" />
-            <span className="text-xs font-semibold text-green-600 dark:text-green-400">Live Stream Active</span>
+      <aside className="w-64 border-r border-border flex flex-col bg-card/50">
+        {/* Brand */}
+        <div className="h-14 border-b border-border flex items-center px-6 gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center font-bold text-white shadow-lg shadow-primary/20">
+            R
           </div>
+          <span className="font-bold text-lg tracking-tight">Recon</span>
+          <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
+            Beta
+          </span>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest px-3 mb-2">
-            Workspace
-          </p>
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {NAV.map((item) => (
             <NavItem key={item.href} {...item} />
           ))}
@@ -95,7 +98,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         {/* User footer */}
-        <div className="p-3 border-t">
+        <div className="p-4 border-t border-border space-y-2">
           <Authenticated>
             <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted transition-colors cursor-pointer group">
               <UserButton afterSignOutUrl="/" />
@@ -119,7 +122,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>dashboard</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleSync}
+              disabled={isSyncing}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary border border-border text-xs font-medium transition-colors disabled:opacity-50"
+              title="Sync active GitHub commits, branches, issues, and PRs via Octokit"
+            >
+              <RefreshCw size={13} className={isSyncing ? "animate-spin text-primary" : "text-muted-foreground"} />
+              <span>{isSyncing ? "Syncing Repos..." : "Sync GitHub Data"}</span>
+            </button>
             <button className="btn-ghost p-2 rounded-lg">
               <Bell size={16} />
             </button>

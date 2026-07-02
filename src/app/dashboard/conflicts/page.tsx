@@ -6,9 +6,12 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { CheckCircle, X, AlertTriangle, FileCode, Sparkles } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
+import { RepoSelector } from "@/components/repo-selector";
 
 export default function ConflictsPage() {
-  const conflicts = useQuery(api.activity.getActiveConflicts);
+  const [selectedRepoId, setSelectedRepoId] = useState<any>(undefined);
+  const conflicts = useQuery(api.activity.getActiveConflicts, { repoId: selectedRepoId });
   const dismissConflict = useMutation(api.conflicts.dismissConflict);
 
   return (
@@ -19,9 +22,12 @@ export default function ConflictsPage() {
           <h1 className="text-2xl font-bold tracking-tight mb-1">Merge Conflicts</h1>
           <p className="text-sm text-muted-foreground">Active file overlaps detected between branches in your repositories.</p>
         </div>
-        <span className={`status-badge ${(conflicts?.length ?? 0) > 0 ? "status-danger" : "status-live"}`}>
-          {conflicts?.length ?? 0} {(conflicts?.length ?? 0) === 1 ? "conflict" : "conflicts"}
-        </span>
+        <div className="flex items-center gap-3">
+          <RepoSelector selectedRepoId={selectedRepoId} onSelectRepo={setSelectedRepoId} />
+          <span className={`status-badge ${(conflicts?.length ?? 0) > 0 ? "status-danger" : "status-live"}`}>
+            {conflicts?.length ?? 0} {(conflicts?.length ?? 0) === 1 ? "conflict" : "conflicts"}
+          </span>
+        </div>
       </div>
 
       {/* Content */}

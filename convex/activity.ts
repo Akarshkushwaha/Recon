@@ -24,11 +24,42 @@ async function getUserRepoIds(ctx: QueryCtx | MutationCtx) {
   return repoIds;
 }
 
-export const getLatestActivity = query({
+export const getUserRepos = query({
   args: {},
   handler: async (ctx) => {
-    const repoIds = await getUserRepoIds(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+
+    const installations = await ctx.db
+      .query("installations")
+      .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
+      .collect();
+
+    if (installations.length === 0) return [];
+
+    const repos: Array<{ _id: Id<"repos">; name: string; fullName: string; githubRepoId: number }> = [];
+    for (const inst of installations) {
+      const instRepos = await ctx.db
+        .query("repos")
+        .filter((q) => q.eq(q.field("installationId"), inst._id))
+        .collect();
+      for (const r of instRepos) {
+        repos.push({ _id: r._id, name: r.name, fullName: r.fullName, githubRepoId: r.githubRepoId });
+      }
+    }
+    return repos;
+  },
+});
+
+export const getLatestActivity = query({
+  args: { repoId: v.optional(v.id("repos")) },
+  handler: async (ctx, args) => {
+    let repoIds = await getUserRepoIds(ctx);
     if (repoIds.length === 0) return [];
+    if (args.repoId) {
+      if (!repoIds.includes(args.repoId)) return [];
+      repoIds = [args.repoId];
+    }
 
     // Fetch latest branch activity across user's repos
     const activity = await ctx.db
@@ -36,7 +67,6 @@ export const getLatestActivity = query({
       .order("desc")
       .collect();
 
-    // In-memory filter and slice because Convex doesn't support IN queries or joins well yet
     return activity
       .filter((a) => repoIds.includes(a.repoId))
       .slice(0, 20);
@@ -44,10 +74,14 @@ export const getLatestActivity = query({
 });
 
 export const getActiveConflicts = query({
-  args: {},
-  handler: async (ctx) => {
-    const repoIds = await getUserRepoIds(ctx);
+  args: { repoId: v.optional(v.id("repos")) },
+  handler: async (ctx, args) => {
+    let repoIds = await getUserRepoIds(ctx);
     if (repoIds.length === 0) return [];
+    if (args.repoId) {
+      if (!repoIds.includes(args.repoId)) return [];
+      repoIds = [args.repoId];
+    }
 
     // Fetch unresolved and undismissed conflicts
     const conflicts = await ctx.db
@@ -59,6 +93,7 @@ export const getActiveConflicts = query({
     return conflicts.filter((c) => repoIds.includes(c.repoId));
   },
 });
+
 
 export const getRepoByGithubId = query({
   args: { githubRepoId: v.number() },

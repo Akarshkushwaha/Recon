@@ -6,9 +6,11 @@ import { api } from "../../../../convex/_generated/api";
 import { GitBranch, Clock, HardDrive, Search } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
+import { RepoSelector } from "@/components/repo-selector";
 
 export default function BranchesPage() {
-  const activity = useQuery(api.activity.getLatestActivity);
+  const [selectedRepoId, setSelectedRepoId] = useState<any>(undefined);
+  const activity = useQuery(api.activity.getLatestActivity, { repoId: selectedRepoId });
   const [search, setSearch] = useState("");
 
   const filtered = activity?.filter(b =>
@@ -28,7 +30,8 @@ export default function BranchesPage() {
           <h1 className="text-2xl font-bold tracking-tight mb-1">Active Branches</h1>
           <p className="text-sm text-muted-foreground">Track all branches with recent push activity across your repositories.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <RepoSelector selectedRepoId={selectedRepoId} onSelectRepo={setSelectedRepoId} />
           {staleCount > 0 && (
             <span className="status-badge status-warning">{staleCount} stale</span>
           )}
