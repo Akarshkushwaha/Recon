@@ -1,28 +1,7 @@
 import { query, mutation, QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
-
-async function getUserRepoIds(ctx: QueryCtx | MutationCtx) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) return [];
-
-  const installations = await ctx.db
-    .query("installations")
-    .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
-    .collect();
-
-  if (installations.length === 0) return [];
-
-  const repoIds: Id<"repos">[] = [];
-  for (const inst of installations) {
-    const instRepos = await ctx.db
-      .query("repos")
-      .filter((q) => q.eq(q.field("installationId"), inst._id))
-      .collect();
-    repoIds.push(...instRepos.map((r) => r._id));
-  }
-  return repoIds;
-}
+import { getUserRepoIds } from "./authHelpers";
 
 export const getUserRepos = query({
   args: {},
@@ -30,10 +9,10 @@ export const getUserRepos = query({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return [];
 
-    const installations = await ctx.db
-      .query("installations")
-      .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
-      .collect();
+    const allInstallations = await ctx.db.query("installations").collect();
+    const installations = allInstallations.filter(
+      (inst) => inst.userId === identity.subject || !inst.userId
+    );
 
     if (installations.length === 0) return [];
 

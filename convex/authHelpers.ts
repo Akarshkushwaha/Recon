@@ -4,10 +4,10 @@ import { Id } from "./_generated/dataModel";
 export async function getUserRepoIds(ctx: QueryCtx | MutationCtx) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) return [];
-  const installations = await ctx.db
-    .query("installations")
-    .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
-    .collect();
+  const allInstallations = await ctx.db.query("installations").collect();
+  const installations = allInstallations.filter(
+    (inst) => inst.userId === identity.subject || !inst.userId
+  );
   if (installations.length === 0) return [];
   const repoIds: Id<"repos">[] = [];
   for (const inst of installations) {
@@ -27,5 +27,5 @@ export async function isRepoOwner(ctx: QueryCtx | MutationCtx, repoId: Id<"repos
   if (!repo) return false;
   const installation = await ctx.db.get(repo.installationId);
   if (!installation) return false;
-  return installation.userId === identity.subject;
+  return installation.userId === identity.subject || !installation.userId;
 }

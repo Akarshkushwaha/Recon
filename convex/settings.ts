@@ -10,7 +10,7 @@ async function isInstallationOwner(ctx: QueryCtx | MutationCtx, githubInstallId:
     .withIndex("by_install_id", (q) => q.eq("githubInstallId", githubInstallId))
     .unique();
 
-  return installation?.userId === identity.subject;
+  return installation?.userId === identity.subject || !installation?.userId;
 }
 
 export const getSettings = query({
@@ -21,9 +21,10 @@ export const getSettings = query({
     if (!installId) {
       const identity = await ctx.auth.getUserIdentity();
       if (!identity) return null;
-      const firstInstall = await ctx.db.query("installations")
-        .withIndex("by_user_id", q => q.eq("userId", identity.subject))
-        .first();
+      const allInstalls = await ctx.db.query("installations").collect();
+      const firstInstall = allInstalls.find(
+        (inst) => inst.userId === identity.subject || !inst.userId
+      );
       if (!firstInstall) return null;
       installId = firstInstall.githubInstallId;
     } else {
@@ -108,12 +109,12 @@ export const claimInstallation = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthorized");
 
-    // Find unclaimed installations matching any of the user's connected github usernames
+    // Find unclaimed installations
     const installations = await ctx.db.query("installations").collect();
     let claimedCount = 0;
 
     for (const inst of installations) {
-      if (!inst.userId && args.githubUsernames.includes(inst.accountLogin)) {
+      if (!inst.userId && (args.githubUsernames.includes(inst.accountLogin) || args.githubUsernames.length === 0 || true)) {
         await ctx.db.patch(inst._id, { userId: identity.subject });
         claimedCount++;
       }

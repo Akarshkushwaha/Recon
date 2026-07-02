@@ -73,7 +73,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <aside className="w-64 border-r border-border flex flex-col bg-card/50">
         {/* Brand */}
-        <div className="h-14 border-b border-border flex items-center px-6 gap-2.5">
+        <Link href="/" className="h-14 border-b border-border flex items-center px-6 gap-2.5 hover:opacity-80 transition-opacity cursor-pointer">
           <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center font-bold text-white shadow-lg shadow-primary/20">
             R
           </div>
@@ -81,7 +81,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
             Beta
           </span>
-        </div>
+        </Link>
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
