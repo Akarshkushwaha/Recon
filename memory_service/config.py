@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+load_dotenv(".env.local")
 
 # LLM / AI API Keys (used by Cognee for ECL pipeline & embeddings)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
