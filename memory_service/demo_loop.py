@@ -175,5 +175,20 @@ async def run_hackathon_demo():
     except Exception:
         pass
 
+    try:
+        from opentelemetry import trace
+        provider = trace.get_tracer_provider()
+        if hasattr(provider, "shutdown"):
+            provider.shutdown()
+            print("Traces flushed and exported to SigNoz successfully.")
+        
+        from opentelemetry._logs import get_logger_provider
+        log_provider = get_logger_provider()
+        if hasattr(log_provider, "shutdown"):
+            log_provider.shutdown()
+            print("Logs flushed and exported to SigNoz successfully.")
+    except Exception as e:
+        pass
+
 if __name__ == "__main__":
     asyncio.run(run_hackathon_demo())
