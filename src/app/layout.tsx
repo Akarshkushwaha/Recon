@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "@/components/convex-provider";
+import { VendoRoot } from "../vendo/vendo-root";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,7 +32,9 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <ConvexClientProvider>
-          {children}
+          <VendoRoot>
+            {children}
+          </VendoRoot>
         </ConvexClientProvider>
       </body>
     </html>

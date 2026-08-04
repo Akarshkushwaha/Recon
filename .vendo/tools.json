@@ -1,0 +1,70 @@
+{
+  "format": "vendo/tools@3",
+  "tools": [
+    {
+      "name": "host_auth_create",
+      "description": "POST /api/auth/{nextauth}",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "nextauth": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "nextauth"
+        ],
+        "additionalProperties": true
+      },
+      "risk": "write",
+      "binding": {
+        "kind": "route",
+        "method": "POST",
+        "path": "/api/auth/{nextauth}",
+        "argsIn": "body"
+      },
+      "srcHash": "sha256:b5715adccef0abd87345d218c4f11300806d689d67586f5b5099d62a790dcdd3"
+    },
+    {
+      "name": "host_auth_get",
+      "description": "GET /api/auth/{nextauth}",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "nextauth": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "nextauth"
+        ],
+        "additionalProperties": true
+      },
+      "risk": "write",
+      "binding": {
+        "kind": "route",
+        "method": "GET",
+        "path": "/api/auth/{nextauth}",
+        "argsIn": "query"
+      },
+      "srcHash": "sha256:b5715adccef0abd87345d218c4f11300806d689d67586f5b5099d62a790dcdd3"
+    },
+    {
+      "name": "host_webhooks_github_create",
+      "description": "POST /api/webhooks/github",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "risk": "write",
+      "binding": {
+        "kind": "route",
+        "method": "POST",
+        "path": "/api/webhooks/github",
+        "argsIn": "body"
+      },
+      "srcHash": "sha256:34d136e63ecdfd5d82ce877c6d362d1b2e82a35a5632428ab3b2229e2037bf2e"
+    }
+  ]
+}

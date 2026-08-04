@@ -13,7 +13,6 @@ import { api } from "../../convex/_generated/api";
 
 const NAV = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Activity Feed" },
-  { href: "/dashboard/memory", icon: BrainCircuit, label: "Cognee Memory" },
   { href: "/dashboard/team", icon: Users, label: "Team Radar" },
   { href: "/dashboard/branches", icon: GitBranch, label: "Active Branches" },
   { href: "/dashboard/conflicts", icon: AlertTriangle, label: "Merge Conflicts" },

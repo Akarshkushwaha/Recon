@@ -1,0 +1,1 @@
+Recon — Real-time Dev Awareness. The real-time pulse of your development team. Detect conflicts, auto-generate standups, and supercharge PRs with AI. Users are software engineers and team leads who need to stay aware of project state and collaborate effectively.

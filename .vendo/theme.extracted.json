@@ -1,0 +1,16 @@
+{
+  "format": "vendo/theme-extracted@1",
+  "slots": {
+    "accent": "#7c3aed",
+    "accentText": "#f8fafc",
+    "background": "#ffffff",
+    "border": "#e2e8f0",
+    "danger": "#ef4444",
+    "surface": "#ffffff",
+    "text": "#020817",
+    "mutedText": "#64748b",
+    "radius": "16px",
+    "fontFamily": "Inter, Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+    "headingFamily": "Inter, Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+  }
+}

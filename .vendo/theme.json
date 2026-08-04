@@ -1,0 +1,24 @@
+{
+  "colors": {
+    "background": "#ffffff",
+    "surface": "#ffffff",
+    "text": "#020817",
+    "muted": "#64748b",
+    "accent": "#7c3aed",
+    "accentText": "#f8fafc",
+    "danger": "#ef4444",
+    "border": "#e2e8f0"
+  },
+  "typography": {
+    "fontFamily": "Inter, Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+    "headingFamily": "Inter, Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+    "baseSize": "16px"
+  },
+  "radius": {
+    "small": "8px",
+    "medium": "16px",
+    "large": "24px"
+  },
+  "density": "comfortable",
+  "motion": "full"
+}
