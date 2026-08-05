@@ -14,7 +14,7 @@
 
 Recon connects to your GitHub repositories to give your team instant, live visibility into active branches, incoming code changes, and potential conflicts **before** they become merge nightmares. 
 
-Unlike traditional AI assistants that treat every pull request like a stateless blank slate, Recon is powered by a **persistent Cognee Hybrid Graph-Vector Memory Engine**. It remembers developer coding styles, tracks historical file risk profiles from past CI failures, adapts to feedback over time, and automates tedious workflows like daily standups and documentation.
+Unlike traditional AI assistants that treat every pull request like a stateless blank slate, Recon is powered by a **persistent memory engine**. It remembers developer coding styles, tracks historical file risk profiles from past CI failures, adapts to feedback over time, and automates tedious workflows like daily standups and documentation.
 
 ---
 
@@ -48,10 +48,10 @@ No more asking *"who is working on what?"* Track every push, commit, and pull re
 Recon automatically analyzes modified file paths on every push. The moment two developers edit the same file on separate branches, Recon alerts you instantly and provides an **interactive visual Playground** to inspect diffs and resolve overlaps side-by-side before attempting a git merge.
 
 ### ✍️ Self-Learning Automated PR Descriptions
-Open a Pull Request with an empty body and let Recon handle the documentation. Powered by Gemini 2.0 Flash and Cognee memory, Recon analyzes code diffs and writes structured, comprehensive descriptions tailored precisely to the author's historical writing style.
+Open a Pull Request with an empty body and let Recon handle the documentation. Powered by Gemini 2.0 Flash and a persistent memory layer, Recon analyzes code diffs and writes structured, comprehensive descriptions tailored precisely to the author's historical writing style.
 
 ### 🎙️ Adaptive AI-Powered Daily Standups
-Stop spending hours compiling daily updates. Recon aggregates cross-branch commit history and queries Cognee memory for merged PRs, active blockers, and team formatting preferences to automatically draft structured, high-value standup reports using Groq (Llama 3.3).
+Stop spending hours compiling daily updates. Recon aggregates cross-branch commit history and queries memory for merged PRs, active blockers, and team formatting preferences to automatically draft structured, high-value standup reports using Groq (Llama 3.3).
 
 ### 🎯 AI Issue Drafter
 Describe a bug or feature idea in plain English. Recon structures it into a polished, markdown-formatted GitHub Issue complete with title, label recommendations, complexity estimates, and implementation checklists, ready to copy to your clipboard.
