@@ -47,14 +47,7 @@ No more asking *"who is working on what?"* Track every push, commit, and pull re
 ### ⚠️ Early Conflict Detection & Visual Playground
 Recon automatically analyzes modified file paths on every push. The moment two developers edit the same file on separate branches, Recon alerts you instantly and provides an **interactive visual Playground** to inspect diffs and resolve overlaps side-by-side before attempting a git merge.
 
-### ✍️ Self-Learning Automated PR Descriptions
-Open a Pull Request with an empty body and let Recon handle the documentation. Powered by Gemini 2.0 Flash and a persistent memory layer, Recon analyzes code diffs and writes structured, comprehensive descriptions tailored precisely to the author's historical writing style.
 
-### 🎙️ Adaptive AI-Powered Daily Standups
-Stop spending hours compiling daily updates. Recon aggregates cross-branch commit history and queries memory for merged PRs, active blockers, and team formatting preferences to automatically draft structured, high-value standup reports using Groq (Llama 3.3).
-
-### 🎯 AI Issue Drafter
-Describe a bug or feature idea in plain English. Recon structures it into a polished, markdown-formatted GitHub Issue complete with title, label recommendations, complexity estimates, and implementation checklists, ready to copy to your clipboard.
 
 ---
 
@@ -122,8 +115,7 @@ The frontend dashboard will be available at [http://localhost:3000](http://local
 
 To unlock live branch tracking and automated PR documentation, create a GitHub App in your developer settings with the following permissions:
 
-- **Pull requests:** Read & Write *(For automated descriptions and PR analysis)*
-- **Issues:** Read & Write *(For AI issue drafting)*
+- **Pull requests:** Read-only *(For PR analysis)*
 - **Contents:** Read-only *(For diff inspection and file risk calculation)*
 - **Metadata:** Read-only *(For repository structure and branch discovery)*
 

@@ -24,27 +24,7 @@ const FEATURES = [
     description: "Recon scans every push event across all active branches in real-time. The moment two developers touch the same file on different branches, you're alerted — before it becomes a merge nightmare.",
     color: "cyan",
   },
-  {
-    icon: Sparkles,
-    badge: "AI-POWERED",
-    title: "Auto Daily Standups",
-    description: "Groq's Llama 3.3 70B analyzes your commit history and writes your standup for you. What you shipped yesterday, what's next, blockers — all inferred automatically from your code.",
-    color: "violet",
-  },
-  {
-    icon: Cpu,
-    badge: "GEMINI 2.0",
-    title: "Smart PR Descriptions",
-    description: "Open a PR with an empty body and Recon fills it in. Gemini 2.0 Flash reads the actual diff, understands what changed, and writes a structured, reviewable description.",
-    color: "emerald",
-  },
-  {
-    icon: Code2,
-    badge: "NL → GITHUB",
-    title: "Issue Creation via NL",
-    description: "Describe a task or bug in plain English. Recon structures it into a proper GitHub Issue with title, labels, assignee, and estimate — and creates it directly via the GitHub API.",
-    color: "orange",
-  },
+
   {
     icon: GitBranch,
     badge: "AUTOMATION",
@@ -82,7 +62,7 @@ const HOW_IT_WORKS = [
   {
     step: "03",
     title: "Instant Clarity",
-    description: "Your dashboard updates live. Conflicts flagged, standups drafted, PR descriptions written — your team always knows what's happening.",
+    description: "Your dashboard updates live. Conflicts flagged — your team always knows what's happening.",
   },
 ];
 
@@ -241,7 +221,7 @@ export default function Home() {
                   { icon: Users, label: "Team Radar" },
                   { icon: GitBranch, label: "Active Branches" },
                   { icon: AlertTriangle, label: "Merge Conflicts" },
-                  { icon: Calendar, label: "Team Standups" },
+
                   { icon: FileText, label: "Changelogs" },
                   { icon: BarChart2, label: "Analytics" },
                 ].map((item, i) => (
@@ -293,10 +273,7 @@ export default function Home() {
                       All Connected Repositories
                       <span className="text-[10px] text-gray-400 ml-2">▼</span>
                     </div>
-                    <div className="flex items-center gap-2 bg-[#0F172A] text-white px-4 py-2.5 rounded-lg text-xs font-semibold shadow-md">
-                      <Sparkles size={14} />
-                      AI Issue Drafter
-                    </div>
+
                   </div>
                 </div>
 
@@ -508,12 +485,7 @@ export default function Home() {
                     </div>
                     Live Conflict Detection
                   </li>
-                  <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">
-                    <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
-                      <Check size={14} className="text-violet-600" />
-                    </div>
-                    AI Standups & PR Drafts
-                  </li>
+
                 </ul>
                 <ul className="space-y-4">
                   <li className="flex items-center gap-3 text-[15px] text-gray-900 font-semibold">

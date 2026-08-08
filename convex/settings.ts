@@ -45,7 +45,7 @@ export const getSettings = query({
         slackWebhookUrl: "",
         discordWebhookUrl: "",
         notifyOnConflicts: true,
-        notifyDailyStandup: true,
+
         notifyStaleBranches: true,
       };
     }
@@ -55,7 +55,7 @@ export const getSettings = query({
       slackWebhookUrl: settings.slackWebhookUrl || "",
       discordWebhookUrl: settings.discordWebhookUrl || "",
       notifyOnConflicts: settings.notifyOnConflicts ?? true,
-      notifyDailyStandup: settings.notifyDailyStandup ?? true,
+
       notifyStaleBranches: settings.notifyStaleBranches ?? true,
     };
   },
@@ -69,7 +69,7 @@ export const updateSettings = mutation({
     slackWebhookUrl: v.optional(v.string()),
     discordWebhookUrl: v.optional(v.string()),
     notifyOnConflicts: v.optional(v.boolean()),
-    notifyDailyStandup: v.optional(v.boolean()),
+
     notifyStaleBranches: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
@@ -88,7 +88,7 @@ export const updateSettings = mutation({
       slackWebhookUrl: args.slackWebhookUrl || "",
       discordWebhookUrl: args.discordWebhookUrl || "",
       notifyOnConflicts: args.notifyOnConflicts ?? true,
-      notifyDailyStandup: args.notifyDailyStandup ?? true,
+
       notifyStaleBranches: args.notifyStaleBranches ?? true,
     };
 

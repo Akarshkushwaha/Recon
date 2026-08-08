@@ -87,14 +87,6 @@ export const getRepoByGithubId = query({
   },
 });
 
-// Cron Stubs
-export const generateStandups = mutation({
-  args: {},
-  handler: async (ctx) => {
-    console.log("Generating daily standups...");
-    // Logic to aggregate work goes here
-  },
-});
 
 export const detectStaleBranches = mutation({
   args: {},
@@ -194,58 +186,6 @@ export const getRecentActivity = query({
       .collect();
       
     return activity.filter((a) => repoIds.includes(a.repoId));
-  },
-});
-
-export const saveStandup = mutation({
-  args: {
-    author: v.string(),
-    yesterday: v.array(v.string()),
-    today: v.array(v.string()),
-    blockers: v.array(v.string()),
-    date: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("standups")
-      .withIndex("by_user_date", (q) =>
-        q.eq("author", args.author).eq("date", args.date)
-      )
-      .unique();
-
-    if (existing) {
-      await ctx.db.patch(existing._id, {
-        yesterday: args.yesterday,
-        today: args.today,
-        blockers: args.blockers,
-      });
-      return existing._id;
-    } else {
-      return await ctx.db.insert("standups", {
-        author: args.author,
-        yesterday: args.yesterday,
-        today: args.today,
-        blockers: args.blockers,
-        date: args.date,
-        createdAt: Date.now(),
-      });
-    }
-  },
-});
-
-export const getStandups = query({
-  args: {},
-  handler: async (ctx) => {
-    // Note: If you want to filter standups by team members in the user's repos, 
-    // you would need more complex logic. For now, we can leave standups global 
-    // or return none if not authenticated.
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
-
-    return await ctx.db
-      .query("standups")
-      .order("desc")
-      .take(50);
   },
 });
 

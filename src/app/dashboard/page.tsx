@@ -7,7 +7,6 @@ import { AlertTriangle, Clock, GitBranch, Terminal, Layers, FileCode, Plus, Filt
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AIAssistantDrafter from "@/components/new-issue-modal";
 
 function StatCard({ label, value, sub, icon: Icon, colorClass }: { label: string; value: string | number; sub?: string; icon: any; colorClass: string }) {
   return (
@@ -34,7 +33,6 @@ export default function DashboardPage() {
   const activity = useQuery(api.activity.getLatestActivity, selectedRepoId === "all" ? {} : { repoId: selectedRepoId as any });
   const conflicts = useQuery(api.activity.getActiveConflicts, selectedRepoId === "all" ? {} : { repoId: selectedRepoId as any });
   const repos = useQuery(api.activity.getRepos);
-  const [isIssueOpen, setIsIssueOpen] = useState(false);
 
   const filteredActivity = selectedRepoId === "all"
     ? activity
@@ -83,13 +81,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsIssueOpen(true)}
-              className="btn-primary py-2.5"
-            >
-              <Sparkles size={15} />
-              AI Issue Drafter
-            </button>
+
           </div>
         </div>
 
@@ -241,7 +233,7 @@ export default function DashboardPage() {
         )}
       </div>
 
-      <AIAssistantDrafter isOpen={isIssueOpen} onClose={() => setIsIssueOpen(false)} />
+
     </DashboardLayout>
   );
 }

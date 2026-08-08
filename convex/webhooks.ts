@@ -176,7 +176,7 @@ export const handlePROpened = mutation({
         title: args.title,
         author: args.author,
         state: "open",
-        descriptionGenerated: false,
+
         nudge24hSent: false,
         nudge48hSent: false,
         openedAt: Date.now(),
@@ -187,37 +187,7 @@ export const handlePROpened = mutation({
   },
 });
 
-export const markPRDescriptionGenerated = mutation({
-  args: {
-    repoFullName: v.string(),
-    prNumber: v.number(),
-  },
-  handler: async (ctx, args) => {
-    const repo = await ctx.db
-      .query("repos")
-      .withIndex("by_repo_id") // Wait, I should use fullName or look up by ID.
-      // Better to look up by fullName if available, or just use the repoId from previous steps.
-      // For now, let's filter by fullName.
-      .filter((q) => q.eq(q.field("fullName"), args.repoFullName))
-      .unique();
 
-    if (!repo) return;
-
-    const pr = await ctx.db
-      .query("pullRequests")
-      .withIndex("by_repo_and_pr", (q) =>
-        q.eq("repoId", repo._id).eq("prNumber", args.prNumber)
-      )
-      .unique();
-
-    if (pr) {
-      await ctx.db.patch(pr._id, {
-        descriptionGenerated: true,
-        updatedAt: Date.now(),
-      });
-    }
-  },
-});
 
 
 export const handleIssue = mutation({

@@ -64,7 +64,7 @@
         "path": "/api/webhooks/github",
         "argsIn": "body"
       },
-      "srcHash": "sha256:34d136e63ecdfd5d82ce877c6d362d1b2e82a35a5632428ab3b2229e2037bf2e"
+      "srcHash": "sha256:392abd4dfb7c0cae42e5b414c73d13209920ae8eac6374a1d1ae1504d0b64277"
     }
   ]
 }

@@ -93,16 +93,7 @@ export async function POST(req: Request) {
         author: event.pull_request.user.login,
       });
 
-      // 2. Generate Description if missing
-      if (!event.pull_request.body) {
-        // Trigger Gemini Action (async)
-        // We fetch the diff via Octokit in a separate action
-        await convex.action(api.github.processPRDescription, {
-          installId: event.installation.id,
-          repoFullName: event.repository.full_name,
-          prNumber: event.pull_request.number,
-        });
-      }
+
 
       // 3. Trigger PR Auto-Labeler
       await convex.action(api.github.autoLabelPR, {

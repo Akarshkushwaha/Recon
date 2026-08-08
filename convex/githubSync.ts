@@ -135,7 +135,7 @@ export const saveSyncedRepoData = mutation({
           title: p.title,
           author: p.author,
           state: p.state,
-          descriptionGenerated: false,
+
           nudge24hSent: false,
           nudge48hSent: false,
           openedAt: p.openedAt,

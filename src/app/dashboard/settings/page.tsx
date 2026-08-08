@@ -35,7 +35,7 @@ export default function SettingsPage() {
   const [slackUrl, setSlackUrl] = useState<string>("");
   const [discordUrl, setDiscordUrl] = useState<string>("");
   const [notifyOnConflicts, setNotifyOnConflicts] = useState<boolean>(true);
-  const [notifyDailyStandup, setNotifyDailyStandup] = useState<boolean>(true);
+
   const [notifyStaleBranches, setNotifyStaleBranches] = useState<boolean>(true);
 
   const [isSavingWebhooks, setIsSavingWebhooks] = useState(false);
@@ -48,7 +48,7 @@ export default function SettingsPage() {
       setSlackUrl(settings.slackWebhookUrl || "");
       setDiscordUrl(settings.discordWebhookUrl || "");
       setNotifyOnConflicts(settings.notifyOnConflicts ?? true);
-      setNotifyDailyStandup(settings.notifyDailyStandup ?? true);
+
       setNotifyStaleBranches(settings.notifyStaleBranches ?? true);
     }
   }, [settings]);
@@ -75,7 +75,7 @@ export default function SettingsPage() {
         slackWebhookUrl: slackUrl,
         discordWebhookUrl: discordUrl,
         notifyOnConflicts,
-        notifyDailyStandup,
+
         notifyStaleBranches,
       });
       setSavedKey(key);
@@ -98,7 +98,7 @@ export default function SettingsPage() {
         slackWebhookUrl: slackUrl,
         discordWebhookUrl: discordUrl,
         notifyOnConflicts,
-        notifyDailyStandup,
+
         notifyStaleBranches,
       });
       setWebhooksSavedSuccessfully(true);
@@ -246,7 +246,7 @@ export default function SettingsPage() {
         <Section
           icon={MessageSquare}
           title="Team Integrations"
-          description="Send conflict alerts and standups directly to Slack or Discord."
+          description="Send conflict alerts directly to Slack or Discord."
         >
           <form onSubmit={handleSaveWebhooks} className="space-y-5">
             {/* Slack URL */}
@@ -296,18 +296,6 @@ export default function SettingsPage() {
                 </label>
               </div>
 
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="notifyDailyStandup"
-                  checked={notifyDailyStandup}
-                  onChange={(e) => setNotifyDailyStandup(e.target.checked)}
-                  className="rounded border-border text-primary bg-muted focus:ring-primary focus:ring-2 w-4 h-4 cursor-pointer"
-                />
-                <label htmlFor="notifyDailyStandup" className="text-sm font-semibold select-none cursor-pointer">
-                  Notify on Daily AI Standup Summaries
-                </label>
-              </div>
 
               <div className="flex items-center gap-3">
                 <input

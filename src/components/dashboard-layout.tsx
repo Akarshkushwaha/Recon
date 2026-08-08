@@ -16,7 +16,6 @@ const NAV = [
   { href: "/dashboard/team", icon: Users, label: "Team Radar" },
   { href: "/dashboard/branches", icon: GitBranch, label: "Active Branches" },
   { href: "/dashboard/conflicts", icon: AlertTriangle, label: "Merge Conflicts" },
-  { href: "/dashboard/standups", icon: Calendar, label: "Team Standups" },
   { href: "/dashboard/changelogs", icon: FileText, label: "Changelogs" },
   { href: "/dashboard/analytics", icon: BarChart2, label: "Analytics" },
 ];
