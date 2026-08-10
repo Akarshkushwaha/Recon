@@ -40,20 +40,20 @@ export default function SettingsPage() {
 
   const [isSavingWebhooks, setIsSavingWebhooks] = useState(false);
   const [webhooksSavedSuccessfully, setWebhooksSavedSuccessfully] = useState(false);
-  const claimInstallation = useMutation(api.settings.claimInstallation);
+  const linkInstallationId = useMutation(api.settings.linkInstallationId);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const installId = params.get("installation_id");
     if (installId) {
-      claimInstallation({ githubInstallId: parseInt(installId) })
+      linkInstallationId({ githubInstallId: parseInt(installId) })
         .then(() => {
           // Clean up URL without refreshing
           window.history.replaceState({}, '', window.location.pathname);
         })
         .catch(console.error);
     }
-  }, [claimInstallation]);
+  }, [linkInstallationId]);
 
   useEffect(() => {
     if (settings) {
@@ -198,7 +198,7 @@ export default function SettingsPage() {
                   <button onClick={() => {
                     const el = document.getElementById('manual-install-id') as HTMLInputElement;
                     if (el.value) {
-                      claimInstallation({ githubInstallId: parseInt(el.value) })
+                      linkInstallationId({ githubInstallId: parseInt(el.value) })
                         .then(() => window.location.reload())
                         .catch(err => alert(err.message));
                     }
