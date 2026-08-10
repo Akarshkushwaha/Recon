@@ -20,6 +20,7 @@ import type * as gemini from "../gemini.js";
 import type * as github from "../github.js";
 import type * as githubSync from "../githubSync.js";
 import type * as notifications from "../notifications.js";
+import type * as reviews from "../reviews.js";
 import type * as settings from "../settings.js";
 import type * as team from "../team.js";
 import type * as webhooks from "../webhooks.js";
@@ -43,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   github: typeof github;
   githubSync: typeof githubSync;
   notifications: typeof notifications;
+  reviews: typeof reviews;
   settings: typeof settings;
   team: typeof team;
   webhooks: typeof webhooks;

@@ -57,4 +57,65 @@ describe("Webhook Processing", () => {
     expect(commits[0].sha).toBe("sha1");
     expect(commits[1].sha).toBe("sha2");
   });
+
+  test("handlePROpened and handlePRReview process PR states properly", async () => {
+    const t = convexTest(schema);
+    
+    // Setup mock repo
+    const repoId = await t.run(async (ctx) => {
+      const installId = await ctx.db.insert("installations", {
+        githubInstallId: 1234,
+        accountLogin: "test-org",
+        accountType: "Organization",
+        avatarUrl: "",
+      });
+
+      return await ctx.db.insert("repos", {
+        installationId: installId,
+        githubRepoId: 999,
+        name: "pr-repo",
+        fullName: "test-org/pr-repo",
+      });
+    });
+
+    // 1. Simulate PR opened
+    await t.mutation(api.webhooks.handlePROpened, {
+      repoId,
+      prNumber: 42,
+      title: "Add awesome feature",
+      author: "devuser",
+      requestedReviewers: ["reviewer1"],
+      mergeableState: "dirty",
+      url: "http://example.com/pr/42"
+    });
+
+    let prs = await t.run(async (ctx) => ctx.db.query("pullRequests").collect());
+    expect(prs.length).toBe(1);
+    expect(prs[0].title).toBe("Add awesome feature");
+    expect(prs[0].requestedReviewers).toContain("reviewer1");
+    expect(prs[0].mergeableState).toBe("dirty");
+
+    // 2. Simulate PR review
+    await t.mutation(api.webhooks.handlePRReview, {
+      repoId,
+      prNumber: 42,
+      reviewer: "reviewer1",
+      state: "APPROVED"
+    });
+
+    prs = await t.run(async (ctx) => ctx.db.query("pullRequests").collect());
+    expect(prs[0].reviews?.length).toBe(1);
+    expect(prs[0].reviews?.[0].reviewer).toBe("reviewer1");
+    expect(prs[0].reviews?.[0].state).toBe("APPROVED");
+
+    // 3. Update PR (e.g. synchronized)
+    await t.mutation(api.webhooks.handlePRUpdate, {
+      repoId,
+      prNumber: 42,
+      mergeableState: "clean"
+    });
+
+    prs = await t.run(async (ctx) => ctx.db.query("pullRequests").collect());
+    expect(prs[0].mergeableState).toBe("clean");
+  });
 });

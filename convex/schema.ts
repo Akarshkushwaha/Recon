@@ -60,6 +60,14 @@ export default defineSchema({
     author: v.string(),
     state: v.string(), // "open", "closed", "merged"
 
+    requestedReviewers: v.optional(v.array(v.string())),
+    reviews: v.optional(v.array(v.object({
+      reviewer: v.string(),
+      state: v.string(),
+    }))),
+    mergeableState: v.optional(v.string()),
+    url: v.optional(v.string()),
+
     nudge24hSent: v.boolean(),
     nudge48hSent: v.boolean(),
     openedAt: v.number(),

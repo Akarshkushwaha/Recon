@@ -79,40 +79,72 @@ export async function POST(req: Request) {
     }
   }
 
-  if (eventName === "pull_request" && event.action === "opened") {
+  if (eventName === "pull_request") {
     const repo = await convex.query(api.activity.getRepoByGithubId, {
       githubRepoId: event.repository.id,
     });
 
     if (repo) {
-      // 1. Save PR to database
-      const prId = await convex.mutation(api.webhooks.handlePROpened, {
-        repoId: repo._id,
-        prNumber: event.pull_request.number,
-        title: event.pull_request.title,
-        author: event.pull_request.user.login,
-      });
+      const reviewers = event.pull_request.requested_reviewers?.map((r: any) => r.login) || [];
+      const mergeableState = event.pull_request.mergeable_state || "unknown";
 
-
-
-      // 3. Trigger PR Auto-Labeler
-      await convex.action(api.github.autoLabelPR, {
-        installId: event.installation.id,
-        repoFullName: event.repository.full_name,
-        prNumber: event.pull_request.number,
-      });
-
-      // 4. Check if PR links to an issue (e.g. #123 or fixes #123)
-      const prText = `${event.pull_request.title} ${event.pull_request.body || ""}`;
-      const issueMatch = prText.match(/#(\d+)/);
-      if (issueMatch) {
-        const issueNum = parseInt(issueMatch[1], 10);
-        await convex.mutation(api.webhooks.linkPRToIssue, {
+      if (event.action === "opened") {
+        await convex.mutation(api.webhooks.handlePROpened, {
           repoId: repo._id,
           prNumber: event.pull_request.number,
-          issueNumber: issueNum,
+          title: event.pull_request.title,
+          author: event.pull_request.user.login,
+          requestedReviewers: reviewers,
+          mergeableState: mergeableState,
+          url: event.pull_request.html_url,
+        });
+
+        // Trigger PR Auto-Labeler
+        await convex.action(api.github.autoLabelPR, {
+          installId: event.installation.id,
+          repoFullName: event.repository.full_name,
+          prNumber: event.pull_request.number,
+        });
+
+        // Check if PR links to an issue (e.g. #123 or fixes #123)
+        const prText = `${event.pull_request.title} ${event.pull_request.body || ""}`;
+        const issueMatch = prText.match(/#(\d+)/);
+        if (issueMatch) {
+          const issueNum = parseInt(issueMatch[1], 10);
+          await convex.mutation(api.webhooks.linkPRToIssue, {
+            repoId: repo._id,
+            prNumber: event.pull_request.number,
+            issueNumber: issueNum,
+          });
+        }
+      } else if (["synchronize", "review_requested", "review_request_removed", "closed", "reopened", "edited"].includes(event.action)) {
+        await convex.mutation(api.webhooks.handlePRUpdate, {
+          repoId: repo._id,
+          prNumber: event.pull_request.number,
+          state: event.pull_request.state,
+          requestedReviewers: reviewers,
+          mergeableState: mergeableState,
+          url: event.pull_request.html_url,
         });
       }
+    }
+  }
+
+  if (eventName === "pull_request_review") {
+    const repo = await convex.query(api.activity.getRepoByGithubId, {
+      githubRepoId: event.repository.id,
+    });
+    
+    if (repo && event.review) {
+      let state = event.review.state.toUpperCase();
+      if (event.action === "dismissed") state = "DISMISSED";
+      
+      await convex.mutation(api.webhooks.handlePRReview, {
+        repoId: repo._id,
+        prNumber: event.pull_request.number,
+        reviewer: event.review.user.login,
+        state: state,
+      });
     }
   }
 

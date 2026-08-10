@@ -160,6 +160,9 @@ export const handlePROpened = mutation({
     prNumber: v.number(),
     title: v.string(),
     author: v.string(),
+    requestedReviewers: v.optional(v.array(v.string())),
+    mergeableState: v.optional(v.string()),
+    url: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
@@ -176,6 +179,10 @@ export const handlePROpened = mutation({
         title: args.title,
         author: args.author,
         state: "open",
+        requestedReviewers: args.requestedReviewers || [],
+        reviews: [],
+        mergeableState: args.mergeableState || "unknown",
+        url: args.url,
 
         nudge24hSent: false,
         nudge48hSent: false,
@@ -184,6 +191,66 @@ export const handlePROpened = mutation({
       });
     }
     return existing._id;
+  },
+});
+
+export const handlePRUpdate = mutation({
+  args: {
+    repoId: v.id("repos"),
+    prNumber: v.number(),
+    state: v.optional(v.string()),
+    requestedReviewers: v.optional(v.array(v.string())),
+    mergeableState: v.optional(v.string()),
+    url: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("pullRequests")
+      .withIndex("by_repo_and_pr", (q) =>
+        q.eq("repoId", args.repoId).eq("prNumber", args.prNumber)
+      )
+      .unique();
+
+    if (existing) {
+      const updates: any = { updatedAt: Date.now() };
+      if (args.state) updates.state = args.state;
+      if (args.requestedReviewers) updates.requestedReviewers = args.requestedReviewers;
+      if (args.mergeableState) updates.mergeableState = args.mergeableState;
+      if (args.url) updates.url = args.url;
+
+      await ctx.db.patch(existing._id, updates);
+    }
+  },
+});
+
+export const handlePRReview = mutation({
+  args: {
+    repoId: v.id("repos"),
+    prNumber: v.number(),
+    reviewer: v.string(),
+    state: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("pullRequests")
+      .withIndex("by_repo_and_pr", (q) =>
+        q.eq("repoId", args.repoId).eq("prNumber", args.prNumber)
+      )
+      .unique();
+
+    if (existing) {
+      let reviews = existing.reviews || [];
+      reviews = reviews.filter(r => r.reviewer !== args.reviewer);
+      
+      if (args.state !== "DISMISSED") {
+        reviews.push({ reviewer: args.reviewer, state: args.state });
+      }
+
+      await ctx.db.patch(existing._id, {
+        reviews,
+        updatedAt: Date.now(),
+      });
+    }
   },
 });
 
