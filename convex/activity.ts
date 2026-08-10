@@ -31,6 +31,48 @@ export const getUserRepos = query({
 });
 
 export const getLatestActivity = query({
+  args: { 
+    repoId: v.optional(v.id("repos")),
+    filterByMe: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    const myUsername = identity?.nickname;
+    
+    let repoIds = await getUserRepoIds(ctx);
+    if (repoIds.length === 0) return [];
+    if (args.repoId) {
+      if (!repoIds.includes(args.repoId)) return [];
+      repoIds = [args.repoId];
+    }
+
+    const activity = await ctx.db
+      .query("branchActivity")
+      .order("desc")
+      .collect();
+
+    return activity
+      .filter((a) => repoIds.includes(a.repoId) && !a.dismissed)
+      .filter((a) => !args.filterByMe || !myUsername || a.authorLogin === myUsername)
+      .slice(0, 20);
+  },
+});
+
+export const dismissActivity = mutation({
+  args: { activityId: v.id("branchActivity") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.activityId, { dismissed: true });
+  }
+});
+
+export const dismissConflict = mutation({
+  args: { conflictId: v.id("conflicts") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.conflictId, { dismissed: true });
+  }
+});
+
+export const getStaleAlerts = query({
   args: { repoId: v.optional(v.id("repos")) },
   handler: async (ctx, args) => {
     let repoIds = await getUserRepoIds(ctx);
@@ -40,16 +82,20 @@ export const getLatestActivity = query({
       repoIds = [args.repoId];
     }
 
-    // Fetch latest branch activity across user's repos
-    const activity = await ctx.db
-      .query("branchActivity")
-      .order("desc")
+    const alerts = await ctx.db
+      .query("staleAlerts")
+      .filter((q) => q.eq(q.field("dismissed"), false))
       .collect();
 
-    return activity
-      .filter((a) => repoIds.includes(a.repoId))
-      .slice(0, 20);
-  },
+    return alerts.filter(a => repoIds.includes(a.repoId));
+  }
+});
+
+export const dismissStaleAlert = mutation({
+  args: { alertId: v.id("staleAlerts") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.alertId, { dismissed: true });
+  }
 });
 
 export const getActiveConflicts = query({

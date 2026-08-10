@@ -26,6 +26,7 @@ export default defineSchema({
     filesChanged: v.array(v.string()),
     commitCount: v.number(),
     lastPushTimestamp: v.number(),
+    dismissed: v.optional(v.boolean()),
   }).index("by_repo_and_branch", ["repoId", "branchName"]),
 
   commits: defineTable({

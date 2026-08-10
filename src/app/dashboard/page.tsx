@@ -1,9 +1,9 @@
 "use client";
 
 import DashboardLayout from "@/components/dashboard-layout";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { AlertTriangle, Clock, GitBranch, Terminal, Layers, FileCode, Plus, Filter, Sparkles, Activity } from "lucide-react";
+import { AlertTriangle, Clock, GitBranch, Terminal, Layers, FileCode, Plus, Filter, Sparkles, Activity, X, Trash2, ShieldAlert } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -30,9 +30,19 @@ function StatCard({ label, value, sub, icon: Icon, colorClass }: { label: string
 export default function DashboardPage() {
   const router = useRouter();
   const [selectedRepoId, setSelectedRepoId] = useState<string>("all");
-  const activity = useQuery(api.activity.getLatestActivity, selectedRepoId === "all" ? {} : { repoId: selectedRepoId as any });
+  const [filterByMe, setFilterByMe] = useState(false);
+  
+  const activity = useQuery(api.activity.getLatestActivity, { 
+    repoId: selectedRepoId === "all" ? undefined : (selectedRepoId as any),
+    filterByMe 
+  });
   const conflicts = useQuery(api.activity.getActiveConflicts, selectedRepoId === "all" ? {} : { repoId: selectedRepoId as any });
+  const staleAlerts = useQuery(api.activity.getStaleAlerts, selectedRepoId === "all" ? {} : { repoId: selectedRepoId as any });
   const repos = useQuery(api.activity.getRepos);
+
+  const dismissActivity = useMutation(api.activity.dismissActivity);
+  const dismissConflict = useMutation(api.activity.dismissConflict);
+  const dismissStaleAlert = useMutation(api.activity.dismissStaleAlert);
 
   const filteredActivity = selectedRepoId === "all"
     ? activity
@@ -41,6 +51,10 @@ export default function DashboardPage() {
   const filteredConflicts = selectedRepoId === "all"
     ? conflicts
     : conflicts?.filter((item) => (item.repoId as string) === selectedRepoId);
+
+  const filteredStaleAlerts = selectedRepoId === "all"
+    ? staleAlerts
+    : staleAlerts?.filter((item) => (item.repoId as string) === selectedRepoId);
 
   const activeCount = filteredActivity?.length ?? 0;
   const conflictCount = filteredConflicts?.length ?? 0;
@@ -59,6 +73,18 @@ export default function DashboardPage() {
             <p className="text-sm text-muted-foreground">Real-time stream of development activity across your connected repositories.</p>
           </div>
           <div className="flex items-center gap-3 self-end sm:self-auto">
+            {/* My Activity Toggle */}
+            <button
+              onClick={() => setFilterByMe(!filterByMe)}
+              className={`px-3 py-2.5 text-xs font-semibold rounded-xl border transition-colors flex items-center gap-2 ${
+                filterByMe 
+                  ? "bg-primary text-primary-foreground border-primary" 
+                  : "bg-card hover:bg-muted text-foreground border-border"
+              }`}
+            >
+              My Activity Only
+            </button>
+            
             {/* Repository Selector Dropdown */}
             <div className="relative">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground flex items-center">
@@ -93,6 +119,46 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Stale Alerts */}
+      {filteredStaleAlerts && filteredStaleAlerts.length > 0 && (
+        <div className="mb-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-amber-500 uppercase tracking-widest flex items-center gap-2">
+              <ShieldAlert size={14} />
+              Clean Up: Stale Branches
+            </h2>
+            <span className="status-badge bg-amber-500/10 text-amber-500 border border-amber-500/20">{filteredStaleAlerts.length} stale</span>
+          </div>
+          {filteredStaleAlerts.map((alert) => (
+            <div
+              key={alert._id}
+              className="flex items-center justify-between p-4 rounded-xl border border-amber-500/25 bg-amber-500/5 hover:border-amber-500/40 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500">
+                  <ShieldAlert size={18} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">
+                    {alert.branchName}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Last active {formatDistanceToNow(alert.lastPushTime, { addSuffix: true })} by {alert.author}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => dismissStaleAlert({ alertId: alert._id })}
+                className="p-2 text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-colors"
+                title="Dismiss Alert"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Conflict alerts */}
       {filteredConflicts && filteredConflicts.length > 0 && (
         <div className="mb-6 space-y-3">
@@ -123,12 +189,21 @@ export default function DashboardPage() {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => router.push(`/dashboard/conflicts/playground?conflictId=${conflict._id}`)}
-                className="btn-danger text-xs px-3 py-1.5"
-              >
-                Resolve
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => router.push(`/dashboard/conflicts/playground?conflictId=${conflict._id}`)}
+                  className="btn-danger text-xs px-3 py-1.5"
+                >
+                  Resolve
+                </button>
+                <button
+                  onClick={() => dismissConflict({ conflictId: conflict._id })}
+                  className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                  title="Dismiss Conflict"
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -226,6 +301,17 @@ export default function DashboardPage() {
                       </span>
                     )}
                   </div>
+                </div>
+
+                {/* Dismiss Activity */}
+                <div className="ml-4 flex-shrink-0 self-center">
+                  <button
+                    onClick={() => dismissActivity({ activityId: item._id })}
+                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                    title="Dismiss Activity"
+                  >
+                    <X size={16} />
+                  </button>
                 </div>
               </div>
             ))}
