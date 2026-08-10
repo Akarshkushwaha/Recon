@@ -277,7 +277,7 @@ export default function DashboardPage() {
 
                   <p className="text-sm text-muted-foreground mb-3">
                     Pushed{" "}
-                    <span className="font-semibold text-foreground">{item.commitCount} commit{item.commitCount !== 1 ? "s" : ""}</span>
+                    <span className="font-semibold text-foreground">{item.commitCount || 1} commit{(item.commitCount || 1) !== 1 ? "s" : ""}</span>
                     {" "}to{" "}
                     <span className="inline-flex items-center gap-1 bg-muted px-2 py-0.5 rounded-md font-mono text-xs font-medium">
                       <GitBranch size={11} className="text-primary" />
@@ -286,7 +286,7 @@ export default function DashboardPage() {
                   </p>
 
                   <div className="flex flex-wrap gap-1.5">
-                    {item.filesChanged.slice(0, 5).map((file, idx) => (
+                    {(item.filesChanged || []).slice(0, 5).map((file, idx) => (
                       <span
                         key={idx}
                         className="code-tag group-hover:border-primary/30 group-hover:text-primary/80 transition-colors flex items-center gap-1"
@@ -295,9 +295,9 @@ export default function DashboardPage() {
                         {file.split('/').pop()}
                       </span>
                     ))}
-                    {item.filesChanged.length > 5 && (
+                    {(item.filesChanged || []).length > 5 && (
                       <span className="code-tag text-muted-foreground/50">
-                        +{item.filesChanged.length - 5} more
+                        +{(item.filesChanged || []).length - 5} more
                       </span>
                     )}
                   </div>
