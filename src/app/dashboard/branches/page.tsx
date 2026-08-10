@@ -108,10 +108,10 @@ export default function BranchesPage() {
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-2">
                   <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
                     <HardDrive size={12} className="text-gray-400" />
-                    {branch.filesChanged.length} file{branch.filesChanged.length !== 1 ? "s" : ""} modified
+                    {(branch.filesChanged || []).length} file{(branch.filesChanged || []).length !== 1 ? "s" : ""} modified
                   </div>
                   <span className="text-[11px] font-bold text-violet-600 bg-violet-50 px-2 py-1 rounded-md border border-violet-100">
-                    {branch.commitCount} commits
+                    {branch.commitCount || 1} commits
                   </span>
                 </div>
               </div>

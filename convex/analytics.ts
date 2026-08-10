@@ -47,9 +47,9 @@ export const getContributorHeatmap = query({
       const d = new Date(item.lastPushTimestamp);
       const day = d.getUTCDay(); // 0=Sun … 6=Sat
       const hour = d.getUTCHours();
-      grid[day][hour] += item.commitCount;
+      grid[day][hour] += (item.commitCount || 1);
       authorMap[item.authorLogin] =
-        (authorMap[item.authorLogin] || 0) + item.commitCount;
+        (authorMap[item.authorLogin] || 0) + (item.commitCount || 1);
     }
 
     return { grid, authorMap, totalPushes: activity.length };
@@ -201,8 +201,8 @@ export const getLeaderboard = query({
           avatar: item.authorAvatar,
         };
       }
-      weeklyMap[item.authorLogin].commits += item.commitCount;
-      weeklyMap[item.authorLogin].filesChanged += item.filesChanged.length;
+      weeklyMap[item.authorLogin].commits += (item.commitCount || 1);
+      weeklyMap[item.authorLogin].filesChanged += (item.filesChanged || []).length;
       weeklyMap[item.authorLogin].branches.add(item.branchName);
     }
 
@@ -212,7 +212,7 @@ export const getLeaderboard = query({
       if (!monthlyMap[item.authorLogin]) {
         monthlyMap[item.authorLogin] = { commits: 0 };
       }
-      monthlyMap[item.authorLogin].commits += item.commitCount;
+      monthlyMap[item.authorLogin].commits += (item.commitCount || 1);
     }
 
     // Convert to sorted array
@@ -261,7 +261,7 @@ export const getCodeOwnershipMap = query({
     const pathAuthorMap: Record<string, Record<string, number>> = {};
 
     for (const item of activity) {
-      for (const file of item.filesChanged) {
+      for (const file of (item.filesChanged || [])) {
         const parts = file.split("/");
         const topLevel = parts.length > 1 ? parts[0] : "(root)";
         const secondLevel =

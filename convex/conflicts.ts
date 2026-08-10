@@ -35,8 +35,10 @@ export const detectConflicts = action({
     const otherBranches = activeBranches.filter((b: Doc<"branchActivity">) => b.branchName !== args.pushedBranch);
 
     for (const other of otherBranches) {
-      const commonFiles = currentBranch.filesChanged.filter((f: string) =>
-        other.filesChanged.includes(f)
+      const currentFiles = currentBranch.filesChanged || [];
+      const otherFiles = other.filesChanged || [];
+      const commonFiles = currentFiles.filter((f: string) =>
+        otherFiles.includes(f)
       );
 
       if (commonFiles.length > 0) {
