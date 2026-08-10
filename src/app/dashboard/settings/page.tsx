@@ -40,6 +40,20 @@ export default function SettingsPage() {
 
   const [isSavingWebhooks, setIsSavingWebhooks] = useState(false);
   const [webhooksSavedSuccessfully, setWebhooksSavedSuccessfully] = useState(false);
+  const claimInstallation = useMutation(api.settings.claimInstallation);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const installId = params.get("installation_id");
+    if (installId) {
+      claimInstallation({ githubInstallId: parseInt(installId) })
+        .then(() => {
+          // Clean up URL without refreshing
+          window.history.replaceState({}, '', window.location.pathname);
+        })
+        .catch(console.error);
+    }
+  }, [claimInstallation]);
 
   useEffect(() => {
     if (settings) {
@@ -173,6 +187,25 @@ export default function SettingsPage() {
                 </button>
               </div>
             </div>
+
+            {/* Manual Claim for unlinked installations */}
+            {!settings && (
+              <div className="mt-4 p-4 border border-border/50 rounded-xl bg-muted/10">
+                <h4 className="font-semibold text-sm mb-1.5">Link Existing Installation</h4>
+                <p className="text-xs text-muted-foreground mb-3">If you already installed the GitHub app but don't see it, enter your Installation ID (found in your GitHub App settings URL) to link it to your account.</p>
+                <div className="flex gap-2">
+                  <input id="manual-install-id" placeholder="e.g. 50123456" className="input text-xs flex-1 h-8" />
+                  <button onClick={() => {
+                    const el = document.getElementById('manual-install-id') as HTMLInputElement;
+                    if (el.value) {
+                      claimInstallation({ githubInstallId: parseInt(el.value) })
+                        .then(() => window.location.reload())
+                        .catch(err => alert(err.message));
+                    }
+                  }} className="btn-primary text-xs px-3 h-8 rounded-md">Link Account</button>
+                </div>
+              </div>
+            )}
           </div>
         </Section>
 

@@ -10,7 +10,7 @@ async function isInstallationOwner(ctx: QueryCtx | MutationCtx, githubInstallId:
     .withIndex("by_install_id", (q) => q.eq("githubInstallId", githubInstallId))
     .unique();
 
-  return installation?.userId === identity.subject || !installation?.userId;
+  return installation?.userId === identity.subject;
 }
 
 export const getSettings = query({
@@ -23,7 +23,7 @@ export const getSettings = query({
       if (!identity) return null;
       const allInstalls = await ctx.db.query("installations").collect();
       const firstInstall = allInstalls.find(
-        (inst) => inst.userId === identity.subject || !inst.userId
+        (inst) => inst.userId === identity.subject
       );
       if (!firstInstall) return null;
       installId = firstInstall.githubInstallId;
@@ -104,21 +104,23 @@ export const updateSettings = mutation({
 });
 
 export const claimInstallation = mutation({
-  args: { githubUsernames: v.array(v.string()) },
+  args: { githubInstallId: v.number() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthorized");
 
-    // Find unclaimed installations
-    const installations = await ctx.db.query("installations").collect();
-    let claimedCount = 0;
+    const installation = await ctx.db
+      .query("installations")
+      .withIndex("by_install_id", (q) => q.eq("githubInstallId", args.githubInstallId))
+      .unique();
 
-    for (const inst of installations) {
-      if (!inst.userId && (args.githubUsernames.includes(inst.accountLogin) || args.githubUsernames.length === 0 || true)) {
-        await ctx.db.patch(inst._id, { userId: identity.subject });
-        claimedCount++;
-      }
+    if (!installation) throw new Error("Installation not found");
+    if (installation.userId) {
+       if (installation.userId === identity.subject) return "already_claimed";
+       throw new Error("Installation already claimed by another user");
     }
-    return claimedCount;
-  },
+
+    await ctx.db.patch(installation._id, { userId: identity.subject });
+    return "claimed";
+  }
 });
