@@ -23,8 +23,8 @@ export default defineSchema({
     branchName: v.string(),
     authorLogin: v.string(),
     authorAvatar: v.string(),
-    filesChanged: v.array(v.string()),
-    commitCount: v.number(),
+    filesChanged: v.optional(v.array(v.string())),
+    commitCount: v.optional(v.number()),
     lastPushTimestamp: v.number(),
     dismissed: v.optional(v.boolean()),
   }).index("by_repo_and_branch", ["repoId", "branchName"]),
@@ -51,7 +51,7 @@ export default defineSchema({
     conflictingFiles: v.array(v.string()),
     detectedAt: v.number(),
     resolvedAt: v.optional(v.number()),
-    dismissed: v.boolean(),
+    dismissed: v.optional(v.boolean()),
   }).index("by_repo", ["repoId"]),
 
   pullRequests: defineTable({
