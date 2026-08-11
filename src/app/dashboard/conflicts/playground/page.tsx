@@ -226,8 +226,8 @@ function ConflictPlaygroundContent() {
 
   // Set initial file once conflict is loaded
   useEffect(() => {
-    if (activeConflict && activeConflict.conflictingFiles.length > 0 && !selectedFile) {
-      setSelectedFile(activeConflict.conflictingFiles[0]);
+    if (activeConflict && (activeConflict.conflictingFiles || []).length > 0 && !selectedFile) {
+      setSelectedFile((activeConflict.conflictingFiles || [])[0]);
     }
   }, [activeConflict, selectedFile]);
 
@@ -460,7 +460,7 @@ ${activeFileVersions.branch2Code}
               }}
               className="bg-transparent border-none text-sm font-semibold focus:outline-none pr-8 cursor-pointer text-foreground"
             >
-              {activeConflict.conflictingFiles.map((file) => (
+              {(activeConflict.conflictingFiles || []).map((file) => (
                 <option key={file} value={file} className="bg-slate-950 text-slate-100">
                   {file.split("/").pop()} ({file})
                 </option>

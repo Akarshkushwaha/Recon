@@ -85,7 +85,7 @@ export default function BranchesPage() {
                         <span className="text-sm font-semibold text-gray-900 block leading-tight">{branch.authorLogin}</span>
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                           <Clock size={10} />
-                          {formatDistanceToNow(branch.lastPushTimestamp, { addSuffix: true })}
+                          {formatDistanceToNow(branch.lastPushTimestamp || Date.now(), { addSuffix: true })}
                         </div>
                       </div>
                     </div>

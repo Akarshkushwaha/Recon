@@ -143,7 +143,7 @@ export default function DashboardPage() {
                     {alert.branchName}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Last active {formatDistanceToNow(alert.lastPushTime, { addSuffix: true })} by {alert.author}
+                    Last active {formatDistanceToNow(alert.lastPushTime || Date.now(), { addSuffix: true })} by {alert.author}
                   </p>
                 </div>
               </div>
@@ -185,7 +185,7 @@ export default function DashboardPage() {
                     <span className="text-foreground">{conflict.branch2}</span>
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    {conflict.conflictingFiles.length} overlapping {conflict.conflictingFiles.length === 1 ? "file" : "files"}
+                    {(conflict.conflictingFiles || []).length} overlapping {(conflict.conflictingFiles || []).length === 1 ? "file" : "files"}
                   </p>
                 </div>
               </div>
@@ -271,7 +271,7 @@ export default function DashboardPage() {
                     </div>
                     <span className="text-[11px] text-muted-foreground flex items-center gap-1.5 flex-shrink-0">
                       <Clock size={11} />
-                      {formatDistanceToNow(item.lastPushTimestamp, { addSuffix: true })}
+                      {formatDistanceToNow(item.lastPushTimestamp || Date.now(), { addSuffix: true })}
                     </span>
                   </div>
 

@@ -61,7 +61,7 @@ export const getReviewInsights = query({
     }
 
     // Sort by most recently updated
-    const sortByUpdated = (a: any, b: any) => b.updatedAt - a.updatedAt;
+    const sortByUpdated = (a: any, b: any) => (b.updatedAt || b.openedAt || 0) - (a.updatedAt || a.openedAt || 0);
     
     return {
       assignedToMe: assignedToMe.sort(sortByUpdated),

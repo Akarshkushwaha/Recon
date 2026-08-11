@@ -95,7 +95,7 @@ export default function ConflictsPage() {
                       <span className="font-mono text-primary">{conflict.branch2}</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Detected {formatDistanceToNow(conflict.detectedAt, { addSuffix: true })}
+                      Detected {formatDistanceToNow(conflict.detectedAt || Date.now(), { addSuffix: true })}
                     </p>
                   </div>
                 </div>
@@ -111,10 +111,10 @@ export default function ConflictsPage() {
               {/* Files */}
               <div className="px-6 py-4">
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">
-                  Conflicting Files ({conflict.conflictingFiles.length})
+                  Conflicting Files ({(conflict.conflictingFiles || []).length})
                 </p>
                 <div className="flex flex-wrap gap-2 mb-5">
-                  {conflict.conflictingFiles.map((file, idx) => (
+                  {(conflict.conflictingFiles || []).map((file, idx) => (
                     <span
                       key={idx}
                       className="code-tag text-destructive border-destructive/25 bg-destructive/5 flex items-center gap-1.5"
