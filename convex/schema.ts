@@ -60,6 +60,7 @@ export default defineSchema({
     title: v.string(),
     author: v.string(),
     state: v.string(), // "open", "closed", "merged"
+    descriptionGenerated: v.optional(v.boolean()),
 
     requestedReviewers: v.optional(v.array(v.string())),
     reviews: v.optional(v.array(v.object({
@@ -97,6 +98,26 @@ export default defineSchema({
     dismissed: v.boolean(),
   }),
 
+  nlIssues: defineTable({
+    userId: v.string(),
+    inputText: v.string(),
+    parsedTitle: v.string(),
+    parsedBody: v.string(),
+    parsedLabel: v.optional(v.string()),
+    parsedAssignee: v.optional(v.string()),
+    githubIssueId: v.optional(v.number()),
+    createdAt: v.number(),
+  }),
+
+  standups: defineTable({
+    author: v.string(),
+    yesterday: v.array(v.string()),
+    today: v.array(v.string()),
+    blockers: v.array(v.string()),
+    date: v.string(),
+    createdAt: v.number(),
+  }).index("by_user_date", ["author", "date"]),
+
 
   settings: defineTable({
     installationId: v.number(),
@@ -105,7 +126,7 @@ export default defineSchema({
     slackWebhookUrl: v.optional(v.string()),
     discordWebhookUrl: v.optional(v.string()),
     notifyOnConflicts: v.optional(v.boolean()),
-
+    notifyDailyStandup: v.optional(v.boolean()),
     notifyStaleBranches: v.optional(v.boolean()),
   }).index("by_installation", ["installationId"]),
 
