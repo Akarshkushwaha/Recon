@@ -116,7 +116,8 @@ export const claimInstallation = mutation({
     let claimedCount = 0;
 
     for (const inst of installations) {
-      if (!inst.userId && (args.githubUsernames.includes(inst.accountLogin))) {
+      const lowercasedUsernames = args.githubUsernames.map(u => u.toLowerCase());
+      if (!inst.userId && lowercasedUsernames.includes(inst.accountLogin.toLowerCase())) {
         await ctx.db.patch(inst._id, { userId: identity.subject });
         claimedCount++;
       }

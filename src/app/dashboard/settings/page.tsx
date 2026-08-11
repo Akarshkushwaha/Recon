@@ -148,45 +148,63 @@ export default function SettingsPage() {
                 <input
                   readOnly
                   value={settings ? String(settings.installationId) : ""}
-                  placeholder="Loading..."
+                  placeholder={settings === undefined ? "Loading..." : "No installation connected"}
                   className="input font-mono bg-muted/30 pr-10"
                 />
-                {!settings && (
+                {settings === undefined && (
                   <Loader2 size={14} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-muted-foreground" />
                 )}
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-xl bg-green-500/5 border border-green-500/20">
-              <div className="flex items-center gap-2.5">
-                <span className="pulse-dot" />
-                <span className="text-sm font-semibold text-green-600 dark:text-green-400">
-                  GitHub App connected and active
-                </span>
+            {settings ? (
+              <div className="flex items-center justify-between p-4 rounded-xl bg-green-500/5 border border-green-500/20">
+                <div className="flex items-center gap-2.5">
+                  <span className="pulse-dot" />
+                  <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                    GitHub App connected and active
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      const installId = settings.installationId;
+                      const url = installId 
+                        ? `https://github.com/settings/installations/${installId}`
+                        : "https://github.com/apps/recon1912";
+                      window.open(url, "_blank");
+                    }}
+                    className="btn-ghost text-xs flex items-center gap-1.5"
+                  >
+                    Manage Repos
+                    <ExternalLink size={11} />
+                  </button>
+                  <button
+                    onClick={() => window.open("https://github.com/apps/recon1912", "_blank")}
+                    className="btn-ghost text-xs flex items-center gap-1.5"
+                  >
+                    Reinstall
+                    <ExternalLink size={11} />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    const installId = settings?.installationId;
-                    const url = installId 
-                      ? `https://github.com/settings/installations/${installId}`
-                      : "https://github.com/apps/recon1912";
-                    window.open(url, "_blank");
-                  }}
-                  className="btn-ghost text-xs flex items-center gap-1.5"
-                >
-                  Manage Repos
-                  <ExternalLink size={11} />
-                </button>
+            ) : settings === null ? (
+              <div className="flex items-center justify-between p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                    No GitHub App Connected
+                  </span>
+                </div>
                 <button
                   onClick={() => window.open("https://github.com/apps/recon1912", "_blank")}
-                  className="btn-ghost text-xs flex items-center gap-1.5"
+                  className="btn-primary text-xs px-3 h-8 flex items-center gap-1.5"
                 >
-                  Reinstall
+                  Install GitHub App
                   <ExternalLink size={11} />
                 </button>
               </div>
-            </div>
+            ) : null}
 
             {/* URL Linking State */}
             {(() => {
