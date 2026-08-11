@@ -1,4 +1,4 @@
-import { mutation, query, action, internalMutation, QueryCtx, MutationCtx } from "./_generated/server";
+import { mutation, query, action, internalMutation, internalQuery, QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { App } from "@octokit/app";
 import { internal } from "./_generated/api";
@@ -215,7 +215,7 @@ export const linkInstallationId = action({
   }
 });
 
-export const _getInstallationForLinking = query({
+export const _getInstallationForLinking = internalQuery({
   args: { githubInstallId: v.number() },
   handler: async (ctx, args) => {
     return await ctx.db
