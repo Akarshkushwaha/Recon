@@ -150,7 +150,7 @@ export const linkInstallationId = action({
     }
 
     if (installation.accountType === "User") {
-      if (installation.accountLogin !== identity.nickname) {
+      if (installation.accountLogin.toLowerCase() !== identity.nickname?.toLowerCase()) {
         throw new Error(`Security Error: You are logged in as ${identity.nickname}, but this installation belongs to ${installation.accountLogin}.`);
       }
     } else {

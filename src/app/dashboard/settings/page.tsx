@@ -40,6 +40,7 @@ export default function SettingsPage() {
 
   const [isSavingWebhooks, setIsSavingWebhooks] = useState(false);
   const [webhooksSavedSuccessfully, setWebhooksSavedSuccessfully] = useState(false);
+  const [linkingError, setLinkingError] = useState<string | null>(null);
   const linkInstallationId = useAction(api.settings.linkInstallationId);
 
   useEffect(() => {
@@ -47,11 +48,16 @@ export default function SettingsPage() {
     const installId = params.get("installation_id");
     if (installId) {
       linkInstallationId({ githubInstallId: parseInt(installId) })
-        .then(() => {
-          // Clean up URL without refreshing
-          window.history.replaceState({}, '', window.location.pathname);
+        .then((res) => {
+          if (res === "already_claimed" || res === "claimed") {
+             window.history.replaceState({}, '', window.location.pathname);
+          }
         })
-        .catch(console.error);
+        .catch((err: Error) => {
+          console.error(err);
+          setLinkingError(err.message);
+          window.history.replaceState({}, '', window.location.pathname);
+        });
     }
   }, [linkInstallationId]);
 
@@ -205,6 +211,14 @@ export default function SettingsPage() {
                 </button>
               </div>
             ) : null}
+            
+            {linkingError && (
+              <div className="mt-2 p-3 border border-red-500/20 bg-red-500/10 rounded-lg text-xs text-red-500">
+                <p className="font-semibold mb-1">Failed to link GitHub App:</p>
+                <p>{linkingError.replace("Uncaught Error: ", "")}</p>
+                <p className="mt-2 text-red-400/80">Please ensure you have linked your GitHub account in your Clerk profile, or that you are an owner/member of the GitHub organization.</p>
+              </div>
+            )}
 
             {/* URL Linking State */}
             {(() => {
