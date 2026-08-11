@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard-layout";
 import { Settings, Github, Zap, Shield, Loader2, Check, ExternalLink, MessageSquare } from "lucide-react";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 
 function Section({ icon: Icon, title, description, children }: any) {
@@ -40,7 +40,7 @@ export default function SettingsPage() {
 
   const [isSavingWebhooks, setIsSavingWebhooks] = useState(false);
   const [webhooksSavedSuccessfully, setWebhooksSavedSuccessfully] = useState(false);
-  const linkInstallationId = useMutation(api.settings.linkInstallationId);
+  const linkInstallationId = useAction(api.settings.linkInstallationId);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -188,24 +188,20 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Manual Claim for unlinked installations */}
-            {!settings && (
-              <div className="mt-4 p-4 border border-border/50 rounded-xl bg-muted/10">
-                <h4 className="font-semibold text-sm mb-1.5">Link Existing Installation</h4>
-                <p className="text-xs text-muted-foreground mb-3">If you already installed the GitHub app but don't see it, enter your Installation ID (found in your GitHub App settings URL) to link it to your account.</p>
-                <div className="flex gap-2">
-                  <input id="manual-install-id" placeholder="e.g. 50123456" className="input text-xs flex-1 h-8" />
-                  <button onClick={() => {
-                    const el = document.getElementById('manual-install-id') as HTMLInputElement;
-                    if (el.value) {
-                      linkInstallationId({ githubInstallId: parseInt(el.value) })
-                        .then(() => window.location.reload())
-                        .catch((err: Error) => alert(err.message));
-                    }
-                  }} className="btn-primary text-xs px-3 h-8 rounded-md">Link Account</button>
-                </div>
-              </div>
-            )}
+            {/* URL Linking State */}
+            {(() => {
+              const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+              const installId = params.get("installation_id");
+              if (!settings && installId) {
+                return (
+                  <div className="mt-4 p-4 border border-border/50 rounded-xl bg-muted/10 flex items-center justify-center gap-3">
+                    <Loader2 size={16} className="animate-spin text-muted-foreground" />
+                    <p className="text-sm font-medium">Verifying GitHub Organization Access...</p>
+                  </div>
+                );
+              }
+              return null;
+            })()}
           </div>
         </Section>
 

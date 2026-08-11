@@ -11,7 +11,7 @@ export const getUserRepos = query({
 
     const allInstallations = await ctx.db.query("installations").collect();
     const installations = allInstallations.filter(
-      (inst) => inst.userId === identity.subject || !inst.userId
+      (inst) => inst.userId === identity.subject
     );
 
     if (installations.length === 0) return [];
