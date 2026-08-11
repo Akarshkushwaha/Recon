@@ -104,10 +104,30 @@ export const updateSettings = mutation({
 });
 
 export const claimInstallation = mutation({
-  args: { githubInstallId: v.number() },
+  args: { githubUsernames: v.array(v.string()) },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthorized");
+
+    // Find unclaimed installations
+    const installations = await ctx.db.query("installations").collect();
+    let claimedCount = 0;
+
+    for (const inst of installations) {
+      if (!inst.userId && (args.githubUsernames.includes(inst.accountLogin))) {
+        await ctx.db.patch(inst._id, { userId: identity.subject });
+        claimedCount++;
+      }
+    }
+    return claimedCount;
+  }
+});
+
+export const linkInstallationId = mutation({
+  args: { githubInstallId: v.number() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
 
     const installation = await ctx.db
       .query("installations")
