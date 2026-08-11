@@ -69,10 +69,10 @@ export default defineSchema({
     mergeableState: v.optional(v.string()),
     url: v.optional(v.string()),
 
-    nudge24hSent: v.boolean(),
-    nudge48hSent: v.boolean(),
-    openedAt: v.number(),
-    updatedAt: v.number(),
+    nudge24hSent: v.optional(v.boolean()),
+    nudge48hSent: v.optional(v.boolean()),
+    openedAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
     closedAt: v.optional(v.number()),
     commits: v.optional(v.array(v.string())), // Array of shas
     linkedIssue: v.optional(v.number()), // Issue number

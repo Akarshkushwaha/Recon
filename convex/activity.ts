@@ -187,10 +187,11 @@ export const sendReviewReminders = mutation({
     const fortyEightHours = 48 * 60 * 60 * 1000;
 
     for (const pr of openPRs) {
-      if (now - pr.openedAt > fortyEightHours && !pr.nudge48hSent) {
+      const prOpenedAt = pr.openedAt || now;
+      if (now - prOpenedAt > fortyEightHours && !pr.nudge48hSent) {
         console.log(`[ALERT] PR #${pr.prNumber} in repo ${pr.repoId} has been open for 48h!`);
         await ctx.db.patch(pr._id, { nudge48hSent: true });
-      } else if (now - pr.openedAt > twentyFourHours && !pr.nudge24hSent) {
+      } else if (now - prOpenedAt > twentyFourHours && !pr.nudge24hSent) {
         console.log(`[ALERT] PR #${pr.prNumber} in repo ${pr.repoId} has been open for 24h!`);
         await ctx.db.patch(pr._id, { nudge24hSent: true });
       }

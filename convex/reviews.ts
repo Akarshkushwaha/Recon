@@ -53,7 +53,8 @@ export const getReviewInsights = query({
       }
 
       // 4. Stuck PRs
-      const timeSinceUpdate = now - pr.updatedAt;
+      const prUpdatedAt = pr.updatedAt || now;
+      const timeSinceUpdate = now - prUpdatedAt;
       if (timeSinceUpdate > STUCK_THRESHOLD_MS) {
         stuck.push(pr);
       }

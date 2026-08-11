@@ -97,7 +97,7 @@ export const getReviewVelocity = query({
     let totalMergeMs = 0;
 
     for (const pr of merged) {
-      const durationMs = pr.closedAt! - pr.openedAt;
+      const durationMs = pr.closedAt! - (pr.openedAt || pr.closedAt!);
       totalMergeMs += durationMs;
       if (!authorVelocity[pr.author]) {
         authorVelocity[pr.author] = { totalMs: 0, count: 0, avgHours: 0 };
