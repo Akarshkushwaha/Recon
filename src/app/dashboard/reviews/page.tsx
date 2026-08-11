@@ -60,7 +60,7 @@ export default function ReviewsPage() {
               {pr.title}
             </h3>
             <p className="text-xs text-muted-foreground">
-              #{pr.prNumber} opened by <span className="text-foreground/80 font-medium">{pr.author}</span> • Updated {formatDistanceToNow(pr.updatedAt || pr.openedAt || Date.now(), { addSuffix: true })}
+              #{pr.prNumber} opened by <span className="text-foreground/80 font-medium">{pr.author}</span> • Updated {formatDistanceToNow(pr.updatedAt || pr.openedAt || 0, { addSuffix: true })}
             </p>
           </div>
           <div className="flex items-center gap-2 ml-4">

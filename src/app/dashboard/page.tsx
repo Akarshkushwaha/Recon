@@ -143,7 +143,7 @@ export default function DashboardPage() {
                     {alert.branchName}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Last active {formatDistanceToNow(alert.lastPushTime || Date.now(), { addSuffix: true })} by {alert.author}
+                    Last active {formatDistanceToNow(alert.lastPushTime || 0, { addSuffix: true })} by {alert.author}
                   </p>
                 </div>
               </div>
@@ -271,7 +271,7 @@ export default function DashboardPage() {
                     </div>
                     <span className="text-[11px] text-muted-foreground flex items-center gap-1.5 flex-shrink-0">
                       <Clock size={11} />
-                      {formatDistanceToNow(item.lastPushTimestamp || Date.now(), { addSuffix: true })}
+                      {formatDistanceToNow(item.lastPushTimestamp || 0, { addSuffix: true })}
                     </span>
                   </div>
 
