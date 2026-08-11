@@ -200,7 +200,7 @@ export default function SettingsPage() {
                     if (el.value) {
                       linkInstallationId({ githubInstallId: parseInt(el.value) })
                         .then(() => window.location.reload())
-                        .catch(err => alert(err.message));
+                        .catch((err: Error) => alert(err.message));
                     }
                   }} className="btn-primary text-xs px-3 h-8 rounded-md">Link Account</button>
                 </div>
