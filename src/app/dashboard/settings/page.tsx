@@ -211,9 +211,39 @@ export default function SettingsPage() {
                 </button>
               </div>
             ) : null}
+
+            {!settings && (
+              <div className="mt-4 p-4 border border-border/50 rounded-xl bg-muted/10">
+                <h4 className="font-semibold text-sm mb-1.5">Already Installed?</h4>
+                <p className="text-xs text-muted-foreground mb-3">
+                  If the GitHub App is already installed but not showing up, you can manually link it by pasting your Installation ID here. You can find this ID in the URL of your GitHub App configuration page.
+                </p>
+                <div className="flex gap-2">
+                  <input id="manual-install-id" placeholder="e.g. 133997707" className="input text-xs flex-1 h-8 bg-background border-border/50" />
+                  <button onClick={() => {
+                    const el = document.getElementById('manual-install-id') as HTMLInputElement;
+                    if (el.value && !isNaN(parseInt(el.value))) {
+                      setLinkingError(null);
+                      linkInstallationId({ githubInstallId: parseInt(el.value) })
+                        .then((res) => {
+                          if (res === "already_claimed" || res === "claimed") {
+                             window.location.reload();
+                          }
+                        })
+                        .catch((err: Error) => {
+                          console.error(err);
+                          setLinkingError(err.message);
+                        });
+                    }
+                  }} className="btn-secondary text-xs px-3 h-8 rounded-md">
+                    Link Installation
+                  </button>
+                </div>
+              </div>
+            )}
             
             {linkingError && (
-              <div className="mt-2 p-3 border border-red-500/20 bg-red-500/10 rounded-lg text-xs text-red-500">
+              <div className="mt-4 p-3 border border-red-500/20 bg-red-500/10 rounded-lg text-xs text-red-500">
                 <p className="font-semibold mb-1">Failed to link GitHub App:</p>
                 <p>{linkingError.replace("Uncaught Error: ", "")}</p>
                 <p className="mt-2 text-red-400/80">Please ensure you have linked your GitHub account in your Clerk profile, or that you are an owner/member of the GitHub organization.</p>
