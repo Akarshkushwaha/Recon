@@ -47,7 +47,8 @@ No more asking *"who is working on what?"* Track every push, commit, and pull re
 ### ⚠️ Early Conflict Detection & Visual Playground
 Recon automatically analyzes modified file paths on every push. The moment two developers edit the same file on separate branches, Recon alerts you instantly and provides an **interactive visual Playground** to inspect diffs and resolve overlaps side-by-side before attempting a git merge.
 
-
+### 🔒 Secure Tenant Isolation & GitHub Linking
+Recon enforces strict zero-trust data boundaries. Repository access is cryptographically verified via the GitHub API (Octokit) before linking, ensuring users can only view and manage repositories they own or have explicit organization access to. Secure manual installation linking allows seamless onboarding for existing GitHub App installations while protecting against unauthorized access.
 
 ---
 
