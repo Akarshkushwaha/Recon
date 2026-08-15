@@ -109,7 +109,7 @@ export const claimInstallation = mutation({
   args: { githubUsernames: v.array(v.string()) },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Unauthorized");
+    if (!identity) throw new ConvexError("Unauthorized");
 
     // Find unclaimed installations
     const installations = await ctx.db.query("installations").collect();
@@ -118,7 +118,7 @@ export const claimInstallation = mutation({
     for (const inst of installations) {
       const lowercasedUsernames = args.githubUsernames.map(u => u.toLowerCase());
       if (!inst.userId && lowercasedUsernames.includes(inst.accountLogin.toLowerCase())) {
-        await ctx.db.patch(inst._id, { userId: identity.subject });
+        await ctx.db.patch(inst._id, { userId: identity.tokenIdentifier });
         claimedCount++;
       }
     }
@@ -146,7 +146,7 @@ export const linkInstallationId = action({
     if (!installation) throw new ConvexError("Installation not found. Please ensure the GitHub App is installed correctly.");
     
     if (installation.userId) {
-       if (installation.userId === identity.subject) return "already_claimed";
+       if (installation.userId === identity.tokenIdentifier || installation.userId === identity.subject) return "already_claimed";
        throw new ConvexError("Installation already claimed by another user");
     }
 
@@ -215,7 +215,7 @@ export const linkInstallationId = action({
 
     await ctx.runMutation(internal.settings._claimInstallationSecurely, { 
       installationId: installation._id, 
-      userId: identity.subject 
+      userId: identity.tokenIdentifier 
     });
     return "claimed";
   }

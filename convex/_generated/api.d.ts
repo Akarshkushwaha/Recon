@@ -23,6 +23,7 @@ import type * as notifications from "../notifications.js";
 import type * as reviews from "../reviews.js";
 import type * as settings from "../settings.js";
 import type * as team from "../team.js";
+import type * as test from "../test.js";
 import type * as webhooks from "../webhooks.js";
 
 import type {
@@ -47,6 +48,7 @@ declare const fullApi: ApiFromModules<{
   reviews: typeof reviews;
   settings: typeof settings;
   team: typeof team;
+  test: typeof test;
   webhooks: typeof webhooks;
 }>;
 

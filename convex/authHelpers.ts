@@ -6,7 +6,7 @@ export async function getUserRepoIds(ctx: QueryCtx | MutationCtx) {
   if (!identity) return [];
   const allInstallations = await ctx.db.query("installations").collect();
   const installations = allInstallations.filter(
-    (inst) => inst.userId === identity.subject
+    (inst) => inst.userId === identity.tokenIdentifier || inst.userId === identity.subject
   );
   if (installations.length === 0) return [];
   const repoIds: Id<"repos">[] = [];
@@ -27,5 +27,5 @@ export async function isRepoOwner(ctx: QueryCtx | MutationCtx, repoId: Id<"repos
   if (!repo) return false;
   const installation = await ctx.db.get(repo.installationId);
   if (!installation) return false;
-  return installation.userId === identity.subject;
+  return installation.userId === identity.tokenIdentifier || installation.userId === identity.subject;
 }
