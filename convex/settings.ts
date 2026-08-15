@@ -133,30 +133,34 @@ export const _claimInstallationSecurely = internalMutation({
   }
 });
 
+import { ConvexError } from "convex/values";
+
 export const linkInstallationId = action({
   args: { githubInstallId: v.number() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Unauthenticated");
+    if (!identity) throw new ConvexError("Unauthenticated");
 
     // Fetch the installation from DB
-    // We have to use a query to get the installation since we are in an action
     const installation = await ctx.runQuery(internal.settings._getInstallationForLinking, { githubInstallId: args.githubInstallId });
-    if (!installation) throw new Error("Installation not found. Please ensure the GitHub App is installed correctly.");
+    if (!installation) throw new ConvexError("Installation not found. Please ensure the GitHub App is installed correctly.");
     
     if (installation.userId) {
        if (installation.userId === identity.subject) return "already_claimed";
-       throw new Error("Installation already claimed by another user");
+       throw new ConvexError("Installation already claimed by another user");
     }
 
     if (installation.accountType === "User") {
-      if (installation.accountLogin.toLowerCase() !== identity.nickname?.toLowerCase()) {
-        throw new Error(`Security Error: You are logged in as ${identity.nickname}, but this installation belongs to ${installation.accountLogin}.`);
+      if (!identity.nickname) {
+        throw new ConvexError("Please connect your GitHub account to your Recon profile (via Clerk) before linking an installation.");
+      }
+      if (installation.accountLogin.toLowerCase() !== identity.nickname.toLowerCase()) {
+        throw new ConvexError(`Security Error: You are logged in as ${identity.nickname}, but this installation belongs to ${installation.accountLogin}.`);
       }
     } else {
       // It's an organization. We need to verify if the user has access.
       if (!process.env.GITHUB_APP_ID || !process.env.GITHUB_APP_PRIVATE_KEY) {
-         throw new Error("GitHub App credentials missing on the server.");
+         throw new ConvexError("GitHub App credentials missing on the server.");
       }
 
       try {
@@ -178,7 +182,7 @@ export const linkInstallationId = action({
           isMember = true;
         } catch (e: any) {
           if (e.status === 404) {
-             throw new Error(`You must be a member of the organization ${installation.accountLogin} to link it.`);
+             throw new ConvexError(`You must be a member of the organization ${installation.accountLogin} to link it.`);
           }
           // If it fails with 403, the app might not have org member permissions. 
           // We can fallback to checking if they are a collaborator on any repo in the installation.
@@ -195,16 +199,17 @@ export const linkInstallationId = action({
                isMember = true;
             } catch (fallbackError: any) {
                if (fallbackError.status === 404) {
-                 throw new Error(`You must be a collaborator on the organization's repositories to link it.`);
+                 throw new ConvexError(`You must be a collaborator on the organization's repositories to link it.`);
                }
                throw fallbackError;
             }
           } else {
-            throw new Error(`The organization ${installation.accountLogin} has no repositories installed to verify your access.`);
+            throw new ConvexError(`The organization ${installation.accountLogin} has no repositories installed to verify your access.`);
           }
         }
       } catch (err: any) {
-         throw new Error(err.message || "Failed to verify organization membership with GitHub.");
+         if (err instanceof ConvexError) throw err;
+         throw new ConvexError(err.message || "Failed to verify organization membership with GitHub.");
       }
     }
 

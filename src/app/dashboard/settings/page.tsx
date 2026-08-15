@@ -55,7 +55,8 @@ export default function SettingsPage() {
         })
         .catch((err: Error) => {
           console.error(err);
-          setLinkingError(err.message);
+          const msg = (err as any).data && typeof (err as any).data === "string" ? (err as any).data : err.message;
+          setLinkingError(msg);
           window.history.replaceState({}, '', window.location.pathname);
         });
     }
@@ -240,7 +241,8 @@ export default function SettingsPage() {
                       })
                       .catch((err: Error) => {
                         console.error(err);
-                        setLinkingError(err.message);
+                        const msg = (err as any).data && typeof (err as any).data === "string" ? (err as any).data : err.message;
+                        setLinkingError(msg);
                       });
                   }} className="btn-secondary text-xs px-3 h-8 rounded-md">
                     Link Installation
