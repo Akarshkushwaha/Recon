@@ -219,22 +219,29 @@ export default function SettingsPage() {
                   If the GitHub App is already installed but not showing up, you can manually link it by pasting your Installation ID here. You can find this ID in the URL of your GitHub App configuration page.
                 </p>
                 <div className="flex gap-2">
-                  <input id="manual-install-id" placeholder="e.g. 133997707" className="input text-xs flex-1 h-8 bg-background border-border/50" />
+                  <input id="manual-install-id" placeholder="e.g. 12345678" className="input text-xs flex-1 h-8 bg-background border-border/50" />
                   <button onClick={() => {
                     const el = document.getElementById('manual-install-id') as HTMLInputElement;
-                    if (el.value && !isNaN(parseInt(el.value))) {
-                      setLinkingError(null);
-                      linkInstallationId({ githubInstallId: parseInt(el.value) })
-                        .then((res) => {
-                          if (res === "already_claimed" || res === "claimed") {
-                             window.location.reload();
-                          }
-                        })
-                        .catch((err: Error) => {
-                          console.error(err);
-                          setLinkingError(err.message);
-                        });
+                    const val = el.value.trim();
+                    if (!val) {
+                      setLinkingError("Please type your Installation ID into the box above.");
+                      return;
                     }
+                    if (isNaN(parseInt(val))) {
+                      setLinkingError("Installation ID must be a number.");
+                      return;
+                    }
+                    setLinkingError(null);
+                    linkInstallationId({ githubInstallId: parseInt(val) })
+                      .then((res) => {
+                        if (res === "already_claimed" || res === "claimed") {
+                            window.location.reload();
+                        }
+                      })
+                      .catch((err: Error) => {
+                        console.error(err);
+                        setLinkingError(err.message);
+                      });
                   }} className="btn-secondary text-xs px-3 h-8 rounded-md">
                     Link Installation
                   </button>
