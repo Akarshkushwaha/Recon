@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   Activity, GitBranch, AlertTriangle, Settings, Calendar,
-  LayoutDashboard, FileText, Bell, ChevronRight, BarChart2, Sparkles, Users, BrainCircuit, RefreshCw, GitPullRequest
+  LayoutDashboard, FileText, Bell, ChevronRight, BarChart2, Sparkles, Users, BrainCircuit, RefreshCw, GitPullRequest, Check
 } from "lucide-react";
 import { Authenticated, Unauthenticated, AuthLoading, useMutation, useAction } from "convex/react";
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
@@ -42,11 +42,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const claimInstallation = useMutation(api.settings.claimInstallation);
   const syncAllRepos = useAction(api.githubSync.syncAllRepos);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [syncSuccess, setSyncSuccess] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const handleSync = async () => {
     setIsSyncing(true);
+    setSyncSuccess(false);
     try {
       await syncAllRepos();
+      setSyncSuccess(true);
+      setTimeout(() => setSyncSuccess(false), 3000);
     } catch (e) {
       console.error(e);
     } finally {
@@ -121,19 +126,42 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>dashboard</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative">
             <button
               onClick={handleSync}
               disabled={isSyncing}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary border border-border text-xs font-medium transition-colors disabled:opacity-50"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
+                syncSuccess
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
+                  : "bg-secondary/50 hover:bg-secondary border-border text-foreground"
+              } disabled:opacity-50`}
               title="Sync active GitHub commits, branches, issues, and PRs via Octokit"
             >
-              <RefreshCw size={13} className={isSyncing ? "animate-spin text-primary" : "text-muted-foreground"} />
-              <span>{isSyncing ? "Syncing Repos..." : "Sync GitHub Data"}</span>
+              {syncSuccess ? (
+                <Check size={13} className="text-emerald-500" />
+              ) : (
+                <RefreshCw size={13} className={isSyncing ? "animate-spin text-primary" : "text-muted-foreground"} />
+              )}
+              <span>{isSyncing ? "Syncing Repos..." : syncSuccess ? "Synced!" : "Sync GitHub Data"}</span>
             </button>
-            <button className="btn-ghost p-2 rounded-lg">
-              <Bell size={16} />
-            </button>
+            <div className="relative">
+              <button 
+                onClick={() => {
+                  setShowNotifications(!showNotifications);
+                  if (!showNotifications) {
+                    setTimeout(() => setShowNotifications(false), 3000);
+                  }
+                }}
+                className={`btn-ghost p-2 rounded-lg transition-colors ${showNotifications ? 'bg-muted' : ''}`}
+              >
+                <Bell size={16} />
+              </button>
+              {showNotifications && (
+                <div className="absolute right-0 top-full mt-2 w-48 p-3 bg-card border border-border rounded-xl shadow-lg z-50 animate-in fade-in slide-in-from-top-2">
+                  <p className="text-xs text-center text-muted-foreground font-medium">No new notifications</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
