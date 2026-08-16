@@ -37,6 +37,7 @@ export const saveSyncedRepoData = mutation({
       state: v.string(),
       openedAt: v.number(),
       updatedAt: v.number(),
+      requestedReviewers: v.optional(v.array(v.string())),
     })),
   },
   handler: async (ctx, args) => {
@@ -127,6 +128,7 @@ export const saveSyncedRepoData = mutation({
           title: p.title,
           state: p.state,
           updatedAt: p.updatedAt,
+          requestedReviewers: p.requestedReviewers || [],
         });
       } else {
         await ctx.db.insert("pullRequests", {
@@ -135,7 +137,7 @@ export const saveSyncedRepoData = mutation({
           title: p.title,
           author: p.author,
           state: p.state,
-
+          requestedReviewers: p.requestedReviewers || [],
           nudge24hSent: false,
           nudge48hSent: false,
           openedAt: p.openedAt,
@@ -249,19 +251,30 @@ export const syncRepoData = action({
       });
 
       const issues: Array<{ issueNumber: number; title: string; state: string; assignee?: string; url: string; updatedAt: number }> = [];
-      const pulls: Array<{ prNumber: number; title: string; author: string; state: string; openedAt: number; updatedAt: number }> = [];
+      const pulls: Array<{ prNumber: number; title: string; author: string; state: string; openedAt: number; updatedAt: number; requestedReviewers?: string[] }> = [];
+
+      // 4. Fetch PRs from Pulls endpoint (which includes requested_reviewers)
+      const { data: pullsData } = await octokit.request("GET /repos/{owner}/{repo}/pulls", {
+        owner,
+        repo,
+        state: "open",
+        per_page: 20,
+      });
+
+      for (const pull of pullsData) {
+        pulls.push({
+          prNumber: pull.number,
+          title: pull.title,
+          author: pull.user?.login || "unknown",
+          state: pull.state,
+          openedAt: new Date(pull.created_at).getTime(),
+          updatedAt: new Date(pull.updated_at).getTime(),
+          requestedReviewers: pull.requested_reviewers?.map((r: any) => r.login) || [],
+        });
+      }
 
       for (const item of issueList) {
-        if (item.pull_request) {
-          pulls.push({
-            prNumber: item.number,
-            title: item.title,
-            author: item.user?.login || "unknown",
-            state: item.state,
-            openedAt: new Date(item.created_at).getTime(),
-            updatedAt: new Date(item.updated_at).getTime(),
-          });
-        } else {
+        if (!item.pull_request) {
           issues.push({
             issueNumber: item.number,
             title: item.title,

@@ -570,8 +570,8 @@ export default function Home() {
             © 2026 Recon Technologies, Inc. · Real-time developer awareness.
           </p>
           <div className="flex items-center gap-6 text-sm font-medium text-gray-500">
-            <a href="#" className="hover:text-gray-900 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-gray-900 transition-colors">Terms</a>
+            <Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-gray-900 transition-colors">Terms</Link>
             <a href="https://github.com/Akarshkushwaha/Recon" target="_blank" className="hover:text-gray-900 transition-colors">GitHub</a>
           </div>
         </div>

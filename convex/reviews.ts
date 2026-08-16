@@ -5,7 +5,7 @@ export const getReviewInsights = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    const githubUsername = identity?.nickname; 
+    const githubUsernameLower = identity?.nickname?.toLowerCase(); 
     
     const repoIds = await getUserRepoIds(ctx);
     if (repoIds.length === 0) {
@@ -34,19 +34,22 @@ export const getReviewInsights = query({
     const conflictBlocked = [];
 
     for (const pr of repoOpenPRs) {
+      const prAuthorLower = pr.author?.toLowerCase();
+      const requestedReviewersLower = pr.requestedReviewers?.map((r: string) => r.toLowerCase()) || [];
+
       // 1. Conflict Blocked
       if (pr.mergeableState === "dirty") {
         conflictBlocked.push(pr);
       }
 
       // 2. Assigned to Me
-      if (githubUsername && pr.requestedReviewers?.includes(githubUsername)) {
+      if (githubUsernameLower && requestedReviewersLower.includes(githubUsernameLower)) {
         assignedToMe.push(pr);
       }
 
       // 3. Awaiting Others (I am the author, and it's not approved yet)
-      if (githubUsername && pr.author === githubUsername) {
-        const hasApproval = pr.reviews?.some((r) => r.state === "APPROVED");
+      if (githubUsernameLower && prAuthorLower === githubUsernameLower) {
+        const hasApproval = pr.reviews?.some((r: any) => r.state === "APPROVED");
         if (!hasApproval) {
           awaitingOthers.push(pr);
         }
