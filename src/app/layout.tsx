@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "@/components/convex-provider";
 import { VendoRoot } from "../vendo/vendo-root";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,6 +37,7 @@ export default function RootLayout({
             {children}
           </VendoRoot>
         </ConvexClientProvider>
+        <Analytics />
       </body>
     </html>
   );
